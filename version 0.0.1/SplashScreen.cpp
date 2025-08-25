@@ -54,7 +54,16 @@ void SplashScreen::UpdateSplashScreen()
 
     if (SplashScreenFinished())
     {
-        Global::gameState = GameState::MainMenu;
+        Global::gameState = GameState::MainMenu; // Go to main menu
+
+        // Reset all splash screen values
+        if (alphaStateChanged != false) alphaStateChanged = false;
+        if (alpha != 0.0f) alpha = 0.0f;
+        if (timeUntilSwitchImages != 0.0f) timeUntilSwitchImages = 0.0f;
+        if (timeUntilSwitchImages != 0.0f) timeUntilSwitchImages = 0.0f;
+
+        // Make the supernova logo invisible afterwards
+        if (supernovaLogo.isVisible()) supernovaLogo.setVisible(false);
     }
 }
 

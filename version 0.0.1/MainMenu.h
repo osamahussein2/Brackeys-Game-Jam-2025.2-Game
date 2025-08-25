@@ -27,15 +27,16 @@ private:
 	static void QuitGame();
 
 	void UpdatePlayButtonInteraction();
+	void UpdateCreditsButtonInteraction();
 	void UpdateQuitButtonInteraction();
 
 private:
 	std::array<Button, 2> playButton; // 0 for normal button, 1 for hightlighted (or hovered) button
-	Button creditsButton;
+	std::array<Button, 2> creditsButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 	std::array<Button, 2> quitButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 
-	static constexpr int buttonSizeX = 200;
-	static constexpr int buttonSizeY = 100;
+	static constexpr int buttonSizeX = 150;
+	static constexpr int buttonSizeY = 75;
 };
 
 #endif

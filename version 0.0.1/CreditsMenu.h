@@ -31,7 +31,7 @@ private:
 
 	std::array<Text, 7> creditMembersText;
 
-	static constexpr int buttonSizeX = 200;
+	static constexpr int buttonSizeX = 100;
 	static constexpr int buttonSizeY = 100;
 
 	float textPosY;

@@ -15,13 +15,13 @@ void CreditsMenu::InitializeCreditsMenu()
     // Back button initialization
     for (int i = 0; i < backButton.size(); i++) backButton[i].setAnchorPreset(AnchorPreset::CENTER_BOTTOM);
 
-    backButton[0].setTexture("Buttons/StartButtonNormal.png"); // Normal button
-    backButton[1].setTexture("Buttons/StartButtonHighlighted.png"); // Highlighted button
+    backButton[0].setTexture("Buttons/BackButtonNormal.png"); // Normal button
+    backButton[1].setTexture("Buttons/BackButtonHighlighted.png"); // Highlighted button
 
     for (int i = 0; i < backButton.size(); i++)
     {
-        backButton[i].setTexturePressed("Buttons/StartButtonClicked.png");
-        backButton[i].setPositionYOffset(-100.0f);
+        backButton[i].setTexturePressed("Buttons/BackButtonClicked.png");
+        backButton[i].setPositionYOffset(-30.0f);
         backButton[i].setSize(buttonSizeX, buttonSizeY);
         backButton[i].getComponent<ButtonComponent>().onRelease = GoBackToMain;
     }
@@ -33,7 +33,7 @@ void CreditsMenu::InitializeCreditsMenu()
     for (int i = 0; i < creditMembersText.size(); i++) creditMembersText[i].setAnchorPreset(AnchorPreset::CENTER);
     
     creditMembersText[0].setText("Programmers");
-    creditMembersText[0].setColor(212.0f / 255.0f, 73.0f / 255.0f, 60.0f / 255.0f);
+    creditMembersText[0].setColor(240.0f / 255.0f, 73.0f / 255.0f, 60.0f / 255.0f);
     creditMembersText[0].setFontSize(25.0f);
 
     creditMembersText[1].setText("Osama Hussein");
@@ -45,7 +45,7 @@ void CreditsMenu::InitializeCreditsMenu()
     creditMembersText[2].setFontSize(20.0f);
 
     creditMembersText[3].setText("2D Artist");
-    creditMembersText[3].setColor(26.0f / 255.0f, 188.0f / 255.0f, 156.0f / 255.0f);
+    creditMembersText[3].setColor(26.0f / 255.0f, 220.0f / 255.0f, 156.0f / 255.0f);
     creditMembersText[3].setFontSize(25.0f);
 
     creditMembersText[4].setText("Ali Wahbi");
@@ -53,7 +53,7 @@ void CreditsMenu::InitializeCreditsMenu()
     creditMembersText[4].setFontSize(20.0f);
 
     creditMembersText[5].setText("Sound/Music Composer");
-    creditMembersText[5].setColor(52.0f / 255.0f, 143.0f / 255.0f, 206.0f / 255.0f);
+    creditMembersText[5].setColor(52.0f / 255.0f, 143.0f / 255.0f, 235.0f / 255.0f);
     creditMembersText[5].setFontSize(25.0f);
 
     creditMembersText[6].setText("SquidTim");
@@ -115,7 +115,7 @@ void CreditsMenu::ScrollingCredits()
     for (int i = 0; i < creditMembersText.size(); i++)
     {
         // Show the credit members texts once they are nearly at the center of the screen
-        if (creditMembersText[i].getPositionYOffset() <= 50.0f)
+        if (creditMembersText[i].getPositionYOffset() <= 125.0f)
         {
             if (!creditMembersText[i].isVisible()) creditMembersText[i].setVisible(true);
         }
@@ -146,8 +146,7 @@ void CreditsMenu::UpdateBackButtonInteraction()
         if (MouseCursor::mouseX >= backButton[i].getPosition().x &&
             MouseCursor::mouseX <= backButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= backButton[i].getPosition().y &&
-            MouseCursor::mouseY <= backButton[i].getPosition().y + buttonSizeY &&
-            !backButton[i].getComponent<ButtonComponent>().pressed)
+            MouseCursor::mouseY <= backButton[i].getPosition().y + buttonSizeY)
         {
             // Show highlighted back button and hide the normal back button
             if (!backButton[1].isVisible())

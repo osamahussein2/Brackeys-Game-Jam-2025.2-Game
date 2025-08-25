@@ -1,7 +1,8 @@
 #include "MainMenu.h"
 #include "Global.h"
 
-MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton{ scene, scene }, quitButton{ scene, scene }
+MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton{ scene, scene }, quitButton{ scene, scene },
+selectedOption(0), keyPressed(false)
 {
 
 }
@@ -68,6 +69,10 @@ void MainMenu::UpdateMainMenu()
     UpdatePlayButtonInteraction();
     UpdateCreditsButtonInteraction();
     UpdateQuitButtonInteraction();
+
+    SwitchBetweenMenuOption();
+
+    HandleInput();
 }
 
 void MainMenu::HideMainMenu()
@@ -106,24 +111,10 @@ void MainMenu::UpdatePlayButtonInteraction()
         if (MouseCursor::mouseX >= playButton[i].getPosition().x &&
             MouseCursor::mouseX <= playButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= playButton[i].getPosition().y &&
-            MouseCursor::mouseY <= playButton[i].getPosition().y + buttonSizeY)
+            MouseCursor::mouseY <= playButton[i].getPosition().y + buttonSizeY && selectedOption != 0)
         {
             // Show highlighted play button and hide the normal play button
-            if (!playButton[1].isVisible())
-            {
-                if (playButton[0].isVisible()) playButton[0].setVisible(false);
-                playButton[1].setVisible(true);
-            }
-        }
-
-        // Otherwise, hide highlighted play button and show the normal play button again
-        else
-        {
-            if (!playButton[0].isVisible())
-            {
-                playButton[0].setVisible(true);
-                if (playButton[1].isVisible()) playButton[1].setVisible(false);
-            }
+            selectedOption = 0;
         }
     }
 }
@@ -137,24 +128,10 @@ void MainMenu::UpdateCreditsButtonInteraction()
         if (MouseCursor::mouseX >= creditsButton[i].getPosition().x &&
             MouseCursor::mouseX <= creditsButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= creditsButton[i].getPosition().y &&
-            MouseCursor::mouseY <= creditsButton[i].getPosition().y + buttonSizeY)
+            MouseCursor::mouseY <= creditsButton[i].getPosition().y + buttonSizeY && selectedOption != 1)
         {
             // Show highlighted credits button and hide the normal credits button
-            if (!creditsButton[1].isVisible())
-            {
-                if (creditsButton[0].isVisible()) creditsButton[0].setVisible(false);
-                creditsButton[1].setVisible(true);
-            }
-        }
-
-        // Otherwise, hide highlighted credits button and show the normal credits button again
-        else
-        {
-            if (!creditsButton[0].isVisible())
-            {
-                creditsButton[0].setVisible(true);
-                if (creditsButton[1].isVisible()) creditsButton[1].setVisible(false);
-            }
+            selectedOption = 1;
         }
     }
 }
@@ -168,24 +145,138 @@ void MainMenu::UpdateQuitButtonInteraction()
         if (MouseCursor::mouseX >= quitButton[i].getPosition().x &&
             MouseCursor::mouseX <= quitButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= quitButton[i].getPosition().y &&
-            MouseCursor::mouseY <= quitButton[i].getPosition().y + buttonSizeY)
+            MouseCursor::mouseY <= quitButton[i].getPosition().y + buttonSizeY && selectedOption != 2)
         {
             // Show highlighted quit button and hide the normal quit button
-            if (!quitButton[1].isVisible())
-            {
-                if (quitButton[0].isVisible()) quitButton[0].setVisible(false);
-                quitButton[1].setVisible(true);
-            }
+            selectedOption = 2;
+        }
+    }
+}
+
+void MainMenu::SwitchBetweenMenuOption()
+{
+    switch (selectedOption)
+    {
+    case 0: // Play button
+
+        if (Input::isKeyPressed(S_KEY_ENTER))
+        {
+            Global::gameState = GameState::Playing;
         }
 
-        // Otherwise, hide highlighted quit button and show the normal quit button again
-        else
+        if (!playButton[1].isVisible()) // Show hightlighted play button
         {
-            if (!quitButton[0].isVisible())
-            {
-                quitButton[0].setVisible(true);
-                if (quitButton[1].isVisible()) quitButton[1].setVisible(false);
-            }
+            if (playButton[0].isVisible()) playButton[0].setVisible(false);
+            playButton[1].setVisible(true);
         }
+
+        if (creditsButton[1].isVisible() || !creditsButton[0].isVisible()) // Hide highlighted credits button
+        {
+            creditsButton[0].setVisible(true);
+            creditsButton[1].setVisible(false);
+        }
+
+        if (quitButton[1].isVisible() || !quitButton[0].isVisible()) // Hide highlighted quit button
+        {
+            quitButton[0].setVisible(true);
+            quitButton[1].setVisible(false);
+        }
+
+        break;
+
+    case 1: // Credits button
+
+        if (Input::isKeyPressed(S_KEY_ENTER))
+        {
+            Global::gameState = GameState::Credits;
+        }
+
+        if (!creditsButton[1].isVisible()) // Show hightlighted credits button
+        {
+            if (creditsButton[0].isVisible()) creditsButton[0].setVisible(false);
+            creditsButton[1].setVisible(true);
+        }
+
+        if (playButton[1].isVisible() || !playButton[0].isVisible()) // Hide highlighted play button
+        {
+            playButton[0].setVisible(true);
+            playButton[1].setVisible(false);
+        }
+
+        if (quitButton[1].isVisible() || !quitButton[0].isVisible()) // Hide highlighted quit button
+        {
+            quitButton[0].setVisible(true);
+            quitButton[1].setVisible(false);
+        }
+
+        break;
+
+    case 2: // Exit button
+
+        if (Input::isKeyPressed(S_KEY_ENTER))
+        {
+            sapp_request_quit();
+        }
+
+        if (!quitButton[1].isVisible()) // Show hightlighted quit button
+        {
+            if (quitButton[0].isVisible()) quitButton[0].setVisible(false);
+            quitButton[1].setVisible(true);
+        }
+
+        if (playButton[1].isVisible() || !playButton[0].isVisible()) // Hide highlighted play button
+        {
+            playButton[0].setVisible(true);
+            playButton[1].setVisible(false);
+        }
+
+        if (creditsButton[1].isVisible() || !creditsButton[0].isVisible()) // Hide highlighted credits button
+        {
+            creditsButton[0].setVisible(true);
+            creditsButton[1].setVisible(false);
+        }
+
+        break;
+
+    default:
+
+        selectedOption = 0; // Reset to first option
+        break;
+    }
+}
+
+void MainMenu::HandleInput()
+{
+    // Press ESCAPE in the main menu to quit the game
+    if (Input::isKeyPressed(S_KEY_ESCAPE) && !Global::escapeKeyPressed)
+    {
+        sapp_request_quit();
+        Global::escapeKeyPressed = true;
+    }
+
+    // Disable the escape key press once ESCAPE key is released
+    else if (!Input::isKeyPressed(S_KEY_ESCAPE) && Global::escapeKeyPressed)
+    {
+        Global::escapeKeyPressed = false;
+    }
+
+    // Navigate the selected button by going up
+    if (Input::isKeyPressed(S_KEY_UP) && selectedOption > 0 && !keyPressed)
+    {
+        selectedOption -= 1;
+        keyPressed = true;
+    }
+
+    // Navigate the selected button by going down
+    if (Input::isKeyPressed(S_KEY_DOWN) && selectedOption >= 0 && selectedOption < 2 && !keyPressed)
+    {
+        selectedOption += 1;
+        keyPressed = true;
+    }
+
+    // Disable key press once both inputs aren't pressed
+    else if (!Input::isKeyPressed(S_KEY_UP) && !Input::isKeyPressed(S_KEY_DOWN) && keyPressed)
+    {
+        keyPressed = false;
     }
 }

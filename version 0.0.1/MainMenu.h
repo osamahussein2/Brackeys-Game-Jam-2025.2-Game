@@ -30,6 +30,10 @@ private:
 	void UpdateCreditsButtonInteraction();
 	void UpdateQuitButtonInteraction();
 
+	void SwitchBetweenMenuOption();
+
+	void HandleInput();
+
 private:
 	std::array<Button, 2> playButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 	std::array<Button, 2> creditsButton; // 0 for normal button, 1 for hightlighted (or hovered) button
@@ -37,6 +41,10 @@ private:
 
 	static constexpr int buttonSizeX = 150;
 	static constexpr int buttonSizeY = 75;
+
+	int selectedOption;
+
+	bool keyPressed;
 };
 
 #endif

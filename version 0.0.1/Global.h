@@ -8,6 +8,7 @@
 struct Global
 {
 	static GameState gameState;
+	static bool escapeKeyPressed;
 };
 
 #endif

@@ -135,6 +135,19 @@ void CreditsMenu::ScrollingCredits()
     {
         textPosY = 100.0f;
     }
+
+    // Press ESCAPE in the credits menu to go back to the main menu
+    if (Input::isKeyPressed(S_KEY_ESCAPE) && !Global::escapeKeyPressed)
+    {
+        Global::gameState = GameState::MainMenu;
+        Global::escapeKeyPressed = true;
+    }
+
+    // Disable the escape key press once ESCAPE key is released
+    else if (!Input::isKeyPressed(S_KEY_ESCAPE) && Global::escapeKeyPressed)
+    {
+        Global::escapeKeyPressed = false;
+    }
 }
 
 void CreditsMenu::UpdateBackButtonInteraction()

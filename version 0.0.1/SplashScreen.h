@@ -16,6 +16,7 @@ public:
 	void InitializeSplashScreen();
 	void UpdateSplashScreen();
 
+private:
 	bool SplashScreenFinished();
 
 private:

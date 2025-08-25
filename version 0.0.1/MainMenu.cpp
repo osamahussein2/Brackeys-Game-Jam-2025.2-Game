@@ -1,16 +1,14 @@
 #include "MainMenu.h"
+#include "Global.h"
 
-std::string MainMenu::gameState = "";
-
-MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton(scene), quitButton{ scene, scene }, 
-mouseHovered(false)
+MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton(scene), quitButton{ scene, scene }
 {
-    gameState = "";
+
 }
 
 MainMenu::~MainMenu()
 {
-    gameState = "";
+
 }
 
 void MainMenu::InitializeMainMenu()
@@ -31,7 +29,7 @@ void MainMenu::InitializeMainMenu()
     creditsButton.setAnchorPreset(AnchorPreset::CENTER);
     creditsButton.setColor(1.0f, 0.0f, 0.0f);
     creditsButton.setColorPressed(0.5f, 0.0f, 0.0f);
-    creditsButton.setSize(200, 100);
+    creditsButton.setSize(buttonSizeX, buttonSizeY);
     creditsButton.setLabel("Credits");
     creditsButton.setLabelFontSize(50);
     creditsButton.setLabelColor(Vector4(0.2f, 0.2f, 0.2f, 1.0f));
@@ -50,34 +48,44 @@ void MainMenu::InitializeMainMenu()
         quitButton[i].getComponent<ButtonComponent>().onRelease = QuitGame;
     }
 
-    // Make sure the normal play button is visible and the highlighted play button is invisible
-    playButton[0].setVisible(true);
+    // 
+    playButton[0].setVisible(false);
     playButton[1].setVisible(false);
 
-    // Make sure the normal quit button is visible and the highlighted quit button is invisible
-    quitButton[0].setVisible(true);
+    creditsButton.setVisible(false);
+
+    // 
+    quitButton[0].setVisible(false);
     quitButton[1].setVisible(false);
 }
 
 void MainMenu::UpdateMainMenu()
 {
+    if (!creditsButton.isVisible()) creditsButton.setVisible(true);
+
     UpdatePlayButtonInteraction();
     UpdateQuitButtonInteraction();
 }
 
-std::string MainMenu::GetGameState() const
+void MainMenu::HideMainMenu()
 {
-    return gameState;
+    if (playButton[0].isVisible()) playButton[0].setVisible(false);
+    if (playButton[1].isVisible()) playButton[1].setVisible(false);
+
+    if (creditsButton.isVisible()) creditsButton.setVisible(false);
+
+    if (quitButton[0].isVisible()) quitButton[0].setVisible(false);
+    if (quitButton[1].isVisible()) quitButton[1].setVisible(false);
 }
 
 void MainMenu::PlayGame()
 {
-    gameState = "Playing";
+    Global::gameState = GameState::Playing;
 }
 
 void MainMenu::Credits()
 {
-    gameState = "Credits";
+    Global::gameState = GameState::Credits;
 }
 
 void MainMenu::QuitGame()
@@ -92,15 +100,15 @@ void MainMenu::UpdatePlayButtonInteraction()
     {
         // If mouse hovers on play button
         if (MouseCursor::mouseX >= playButton[i].getPosition().x &&
-            MouseCursor::mouseX <= playButton[i].getPosition().x + 200.0f &&
+            MouseCursor::mouseX <= playButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= playButton[i].getPosition().y &&
-            MouseCursor::mouseY <= playButton[i].getPosition().y + 100.0f &&
+            MouseCursor::mouseY <= playButton[i].getPosition().y + buttonSizeY &&
             !playButton[i].getComponent<ButtonComponent>().pressed)
         {
             // Show highlighted play button and hide the normal play button
-            if (playButton[0].isVisible() && !playButton[1].isVisible())
+            if (!playButton[1].isVisible())
             {
-                playButton[0].setVisible(false);
+                if (playButton[0].isVisible()) playButton[0].setVisible(false);
                 playButton[1].setVisible(true);
             }
         }
@@ -108,10 +116,10 @@ void MainMenu::UpdatePlayButtonInteraction()
         // Otherwise, hide highlighted play button and show the normal play button again
         else
         {
-            if (!playButton[0].isVisible() && playButton[1].isVisible())
+            if (!playButton[0].isVisible())
             {
                 playButton[0].setVisible(true);
-                playButton[1].setVisible(false);
+                if (playButton[1].isVisible()) playButton[1].setVisible(false);
             }
         }
     }
@@ -124,15 +132,15 @@ void MainMenu::UpdateQuitButtonInteraction()
     {
         // If mouse hovers on quit button
         if (MouseCursor::mouseX >= quitButton[i].getPosition().x &&
-            MouseCursor::mouseX <= quitButton[i].getPosition().x + 200.0f &&
+            MouseCursor::mouseX <= quitButton[i].getPosition().x + buttonSizeX &&
             MouseCursor::mouseY >= quitButton[i].getPosition().y &&
-            MouseCursor::mouseY <= quitButton[i].getPosition().y + 100.0f &&
+            MouseCursor::mouseY <= quitButton[i].getPosition().y + buttonSizeY &&
             !quitButton[i].getComponent<ButtonComponent>().pressed)
         {
             // Show highlighted quit button and hide the normal quit button
-            if (quitButton[0].isVisible() && !quitButton[1].isVisible())
+            if (!quitButton[1].isVisible())
             {
-                quitButton[0].setVisible(false);
+                if (quitButton[0].isVisible()) quitButton[0].setVisible(false);
                 quitButton[1].setVisible(true);
             }
         }
@@ -140,10 +148,10 @@ void MainMenu::UpdateQuitButtonInteraction()
         // Otherwise, hide highlighted quit button and show the normal quit button again
         else
         {
-            if (!quitButton[0].isVisible() && quitButton[1].isVisible())
+            if (!quitButton[0].isVisible())
             {
                 quitButton[0].setVisible(true);
-                quitButton[1].setVisible(false);
+                if (quitButton[1].isVisible()) quitButton[1].setVisible(false);
             }
         }
     }

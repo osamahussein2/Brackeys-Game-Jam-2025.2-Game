@@ -1,26 +1,18 @@
 #include "SplashScreen.h"
 #include "MainMenu.h"
 #include "MouseCursor.h"
+#include "CreditsMenu.h"
 
-// Game state declaration
-enum class GameState
-{
-    SupernovaEngine,
-    MainMenu,
-    Credits,
-    Playing,
-    Paused
-};
-
-GameState gameState;
+#include "Global.h"
 
 // Create scene instances
 Scene scene;
 Scene UI_scene;
 
 // Create our own instances
-SplashScreen* splashScreen = nullptr;
-MainMenu* mainMenu = nullptr;
+SplashScreen splashScreen(&UI_scene);
+MainMenu mainMenu(&UI_scene);
+CreditsMenu creditsMenu(&UI_scene);
 
 // Add functions for updating/quitting the game
 void update();
@@ -28,9 +20,15 @@ void quit();
 
 void onMouseMove(float x, float y, int mods);
 
-void init(){
+void init()
+{
+    // Make sure the game state starts at the splash screen
+    Global::gameState = GameState::SupernovaEngine;
 
-    gameState = GameState::SupernovaEngine;
+    // Initialize menus
+    splashScreen.InitializeSplashScreen();
+    mainMenu.InitializeMainMenu();
+    creditsMenu.InitializeCreditsMenu();
 
     // Set engine parameters
     Engine::setScalingMode(Scaling::STRETCH);
@@ -38,6 +36,7 @@ void init(){
     Engine::setScene(&scene);
     Engine::addSceneLayer(&UI_scene);
 
+    // Set engine callbacks
     Engine::onMouseMove = onMouseMove;
     Engine::onUpdate = update;
     Engine::onShutdown = quit;
@@ -45,70 +44,40 @@ void init(){
 
 void update()
 {
-    switch (gameState)
+    switch (Global::gameState)
     {
     case GameState::SupernovaEngine:
 
-        // Make sure to allocate memory on splash screen instance if it's valid and initialize instances
-        if (!splashScreen)
-        {
-            splashScreen = new SplashScreen(&UI_scene);
-            splashScreen->InitializeSplashScreen();
-        }
-
-        // Once it points to the splashscreen instance, update the splash screen and begin transitioning to main menu state
-        else
-        {
-            splashScreen->UpdateSplashScreen();
-
-            if (splashScreen->SplashScreenFinished())
-            {
-                gameState = GameState::MainMenu;
-
-                delete splashScreen; // Also delete its memory to prevent memory leaks
-                splashScreen = nullptr;
-            }
-        }
+        // Update splash screen
+        splashScreen.UpdateSplashScreen();
 
         break;
 
     case GameState::MainMenu:
 
-        // Make sure to allocate memory on main menu instance if it's valid and initialize instances
-        if (!mainMenu)
-        {
-            mainMenu = new MainMenu(&UI_scene);
-            mainMenu->InitializeMainMenu();
-        }
+        // Update main menu buttons
+        mainMenu.UpdateMainMenu();
 
-        // Once it points to the main menu instance, check for game state transition to playing
-        else
-        {
-            // Update main menu buttons
-            mainMenu->UpdateMainMenu();
+        // Hide any other menu
+        creditsMenu.HideCreditsMenu();
 
-            if (mainMenu->GetGameState() == "Playing")
-            {
-                gameState = GameState::Playing;
-
-                delete mainMenu; // Also delete its memory to prevent memory leaks
-                mainMenu = nullptr;
-            }
-
-            else if (mainMenu->GetGameState() == "Credits")
-            {
-                gameState = GameState::Credits;
-
-                delete mainMenu; // Also delete its memory to prevent memory leaks
-                mainMenu = nullptr;
-            }
-        }
         break;
 
     case GameState::Credits:
+
+        // Update credits menu
+        creditsMenu.UpdateCreditsMenu();
+
+        // Hide any other menu
+        mainMenu.HideMainMenu();
+
         break;
 
     case GameState::Playing:
+
+        // Hide any other menu
+        mainMenu.HideMainMenu();
+
         break;
 
     case GameState::Paused:

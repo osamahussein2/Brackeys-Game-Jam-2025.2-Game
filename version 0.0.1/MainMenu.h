@@ -19,7 +19,7 @@ public:
 	void InitializeMainMenu();
 	void UpdateMainMenu();
 
-	std::string GetGameState() const;
+	void HideMainMenu();
 
 private:
 	static void PlayGame();
@@ -34,9 +34,8 @@ private:
 	Button creditsButton;
 	std::array<Button, 2> quitButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 
-	static std::string gameState;
-
-	bool mouseHovered;
+	static constexpr int buttonSizeX = 200;
+	static constexpr int buttonSizeY = 100;
 };
 
 #endif

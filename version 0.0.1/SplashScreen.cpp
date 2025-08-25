@@ -1,4 +1,5 @@
 #include "SplashScreen.h"
+#include "Global.h"
 
 SplashScreen::SplashScreen(Scene* scene) : supernovaLogo(scene), alpha(0.0f), timeUntilSwitchImages(0.0f),
 alphaStateChanged(false), whenToShowImage(0.0f)
@@ -15,10 +16,13 @@ void SplashScreen::InitializeSplashScreen()
     supernovaLogo.setTexture("supernova.png");
 
     supernovaLogo.setAlpha(alpha);
+    supernovaLogo.setVisible(false);
 }
 
 void SplashScreen::UpdateSplashScreen()
 {
+    if (!supernovaLogo.isVisible()) supernovaLogo.setVisible(true);
+
     supernovaLogo.setAlpha(alpha);
 
     // Increment the timer until a certain time threshold for showing the image
@@ -46,6 +50,11 @@ void SplashScreen::UpdateSplashScreen()
         {
             alphaStateChanged = true;
         }
+    }
+
+    if (SplashScreenFinished())
+    {
+        Global::gameState = GameState::MainMenu;
     }
 }
 

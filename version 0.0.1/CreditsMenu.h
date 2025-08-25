@@ -23,13 +23,18 @@ public:
 private:
 	static void GoBackToMain();
 
+	void ScrollingCredits();
 	void UpdateBackButtonInteraction();
 
 private:
 	std::array<Button, 2> backButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 
+	std::array<Text, 7> creditMembersText;
+
 	static constexpr int buttonSizeX = 200;
 	static constexpr int buttonSizeY = 100;
+
+	float textPosY;
 };
 
 #endif

@@ -21,6 +21,8 @@ public:
 
 	void HideGame();
 
+	void ResetGame();
+
 private:
 	void HandlePlayerInput();
 

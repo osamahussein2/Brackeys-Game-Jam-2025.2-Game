@@ -3,6 +3,7 @@
 #include "MouseCursor.h"
 #include "CreditsMenu.h"
 #include "Game.h"
+#include "PauseMenu.h"
 
 #include "Global.h"
 
@@ -11,6 +12,7 @@ SplashScreen splashScreen(&Global::UI_scene);
 MainMenu mainMenu(&Global::UI_scene);
 CreditsMenu creditsMenu(&Global::UI_scene);
 Game game(&Global::scene, &Global::UI_scene);
+PauseMenu pauseMenu(&Global::UI_scene);
 
 // Add functions for updating/quitting the game
 void update();
@@ -27,6 +29,7 @@ void init()
     splashScreen.InitializeSplashScreen();
     mainMenu.InitializeMainMenu();
     creditsMenu.InitializeCreditsMenu();
+    pauseMenu.InitializePauseMenu();
 
     // Initialize game
     game.InitializeGame();
@@ -61,8 +64,11 @@ void update()
 
         // Hide any other menu
         creditsMenu.HideCreditsMenu();
+        pauseMenu.HidePauseMenu();
 
+        // Hide the game and reset it too
         game.HideGame();
+        game.ResetGame();
 
         break;
 
@@ -82,10 +88,13 @@ void update()
 
         // Hide any other menu
         mainMenu.HideMainMenu();
+        pauseMenu.HidePauseMenu();
 
         break;
 
     case GameState::Paused:
+
+        pauseMenu.UpdatePauseMenu();
 
         game.HideGame();
 

@@ -10,6 +10,7 @@ struct Global
 {
 	static GameState gameState;
 	static bool escapeKeyPressed;
+	static bool enterKeyPressed;
 
 	// Create scene instances
 	static Supernova::Scene scene;

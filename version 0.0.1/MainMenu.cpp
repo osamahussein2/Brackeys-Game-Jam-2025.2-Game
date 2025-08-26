@@ -159,9 +159,15 @@ void MainMenu::SwitchBetweenMenuOption()
     {
     case 0: // Play button
 
-        if (Input::isKeyPressed(S_KEY_ENTER))
+        if (Input::isKeyPressed(S_KEY_ENTER) && !Global::enterKeyPressed)
         {
             Global::gameState = GameState::Playing;
+            Global::enterKeyPressed = true;
+        }
+
+        else if (!Input::isKeyPressed(S_KEY_ENTER) && Global::enterKeyPressed)
+        {
+            Global::enterKeyPressed = false;
         }
 
         if (!playButton[1].isVisible()) // Show hightlighted play button

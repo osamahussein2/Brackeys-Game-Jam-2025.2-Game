@@ -38,6 +38,12 @@ void Game::HideGame()
     pointer.HidePointer();
 }
 
+void Game::ResetGame()
+{
+    if (x != 0.0f) x = 0.0f; 
+    if (y != 0.0f) y = 0.0f;
+}
+
 void Game::HandlePlayerInput()
 {
     if (Input::isKeyPressed(S_KEY_UP)) {
@@ -60,10 +66,10 @@ void Game::HandlePlayerInput()
         x += 1;
     }
 
-    // For now, just quit to main menu
+    // Pause the game when pressing ESCAPE
     if (Input::isKeyPressed(S_KEY_ESCAPE) && !Global::escapeKeyPressed)
     {
-        Global::gameState = GameState::MainMenu;
+        Global::gameState = GameState::Paused;
         Global::escapeKeyPressed = true;
     }
 

@@ -22,6 +22,9 @@ public:
 	void HidePointer();
 
 private:
+	void ClampPointerToScreen(Vector2& playerPos_, Vector2& target_);
+
+private:
 	Image pointerImage;
 
 	static constexpr int pointerSizeX = 100;

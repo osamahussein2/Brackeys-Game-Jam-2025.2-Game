@@ -23,24 +23,11 @@ void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
 	float angle_rad = std::atan2(target_.y - playerPos_.y, target_.x - playerPos_.x);
 	float angle_deg = angle_rad * (180 / M_PI);
 
-	// Move the pointer around
+	// Move and rotate the pointer around
 	pointerImage.setPosition(target_.x - playerPos_.x, target_.y - playerPos_.y, 0.0f);
 	pointerImage.setRotation(0.0f, 0.0f, angle_deg);
 
-	// Clamp the pointer to be in the screen
-	/*if (target_.x - playerPos_.x <= 100.0f) pointerImage.setPosition(100.0f, target_.y - playerPos_.y, 0.0f);
-	
-	else if (target_.x - playerPos_.x + pointerSizeX >= 950.0f)
-	{
-		pointerImage.setPosition(850.0f, target_.y - playerPos_.y, 0.0f);
-	}
-
-	if (target_.y - playerPos_.y <= 70.0f) pointerImage.setPosition(target_.x - playerPos_.x, 70.0f, 0.0f);
-	
-	else if (target_.y - playerPos_.y + pointerSizeY >= 550.0f)
-	{
-		pointerImage.setPosition(target_.x - playerPos_.x, 500.0f, 0.0f);
-	}*/
+	ClampPointerToScreen(playerPos_, target_);
 
 	// Find the distance between the player and target to set pointer visibility
 	float dx = playerPos_.x - target_.x;
@@ -61,4 +48,56 @@ void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
 void Pointer::HidePointer()
 {
 	if (pointerImage.isVisible()) pointerImage.setVisible(false); // Make the pointer invisible if needed
+}
+
+void Pointer::ClampPointerToScreen(Vector2& playerPos_, Vector2& target_)
+{
+	// Clamp the pointer to be in the screen
+	if (playerPos_.x <= target_.x - 420.0f)
+	{
+		if (playerPos_.y <= target_.y - 220.0f) // Check if the camera is at the top left of the screen
+		{
+			pointerImage.setPosition(playerPos_.x + 445.0f, playerPos_.y + 240.0f, 0.0f);
+		}
+
+		else if (playerPos_.y >= target_.y - 25.0f) // Check if the camera is at the bottom left of the screen
+		{
+			pointerImage.setPosition(playerPos_.x + 445.0f, playerPos_.y - 150.0f, 0.0f);
+		}
+
+		else pointerImage.setPosition(playerPos_.x + 445.0f, target_.y - playerPos_.y, 0.0f);
+	}
+
+	else if (playerPos_.x >= target_.x - 35.0f)
+	{
+		if (playerPos_.y <= target_.y - 220.0f) // Check if the camera is at the top right of the screen
+		{
+			pointerImage.setPosition(playerPos_.x - 330.0f, playerPos_.y + 240.0f, 0.0f);
+		}
+
+		else if (playerPos_.y >= target_.y - 25.0f) // Check if the camera is at the bottom right of the screen
+		{
+			pointerImage.setPosition(playerPos_.x - 330.0f, playerPos_.y - 150.0f, 0.0f);
+		}
+
+		else pointerImage.setPosition(playerPos_.x - 330.0f, target_.y - playerPos_.y, 0.0f);
+	}
+
+	if (playerPos_.y <= target_.y - 220.0f)
+	{
+		// Check if the camera is at the top of the screen only
+		if (playerPos_.x > target_.x - 420.0f && playerPos_.x < target_.x - 35.0f)
+		{
+			pointerImage.setPosition(target_.x - playerPos_.x, playerPos_.y + 240.0f, 0.0f);
+		}
+	}
+
+	else if (playerPos_.y >= target_.y - 25.0f)
+	{
+		// Check if the camera is at the bottom of the screen only
+		if (playerPos_.x > target_.x - 420.0f && playerPos_.x < target_.x - 35.0f)
+		{
+			pointerImage.setPosition(target_.x - playerPos_.x, playerPos_.y - 150.0f, 0.0f);
+		}
+	}
 }

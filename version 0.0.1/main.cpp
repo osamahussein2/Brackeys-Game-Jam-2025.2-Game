@@ -2,17 +2,15 @@
 #include "MainMenu.h"
 #include "MouseCursor.h"
 #include "CreditsMenu.h"
+#include "Game.h"
 
 #include "Global.h"
 
-// Create scene instances
-Scene scene;
-Scene UI_scene;
-
 // Create our own instances
-SplashScreen splashScreen(&UI_scene);
-MainMenu mainMenu(&UI_scene);
-CreditsMenu creditsMenu(&UI_scene);
+SplashScreen splashScreen(&Global::UI_scene);
+MainMenu mainMenu(&Global::UI_scene);
+CreditsMenu creditsMenu(&Global::UI_scene);
+Game game(&Global::scene, &Global::UI_scene);
 
 // Add functions for updating/quitting the game
 void update();
@@ -30,11 +28,14 @@ void init()
     mainMenu.InitializeMainMenu();
     creditsMenu.InitializeCreditsMenu();
 
+    // Initialize game
+    game.InitializeGame();
+
     // Set engine parameters
     Engine::setScalingMode(Scaling::STRETCH);
     Engine::setCanvasSize(1000, 600);
-    Engine::setScene(&scene);
-    Engine::addSceneLayer(&UI_scene);
+    Engine::setScene(&Global::scene);
+    Engine::addSceneLayer(&Global::UI_scene);
 
     // Set engine callbacks
     Engine::onMouseMove = onMouseMove;
@@ -61,6 +62,8 @@ void update()
         // Hide any other menu
         creditsMenu.HideCreditsMenu();
 
+        game.HideGame();
+
         break;
 
     case GameState::Credits:
@@ -75,12 +78,17 @@ void update()
 
     case GameState::Playing:
 
+        game.UpdateGame();
+
         // Hide any other menu
         mainMenu.HideMainMenu();
 
         break;
 
     case GameState::Paused:
+
+        game.HideGame();
+
         break;
 
     default:
@@ -90,8 +98,8 @@ void update()
 
 void quit()
 {
-    scene.destroy();
-    UI_scene.destroy();
+    Global::scene.destroy();
+    Global::UI_scene.destroy();
 }
 
 void onMouseMove(float x, float y, int mods)

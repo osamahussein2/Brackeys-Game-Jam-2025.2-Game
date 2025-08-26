@@ -1,7 +1,8 @@
 #include "Game.h"
 #include "Global.h"
 
-Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f)
+Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f), 
+gameMusic(gameScene), musicPlaying(false)
 {
 
 }
@@ -19,13 +20,25 @@ void Game::InitializeGame()
 
     // Initialize game objects
     pointer.InitializePointer("Pointers/YellowPointer.png");
+
+    // Initialize gameplay music
+    gameMusic.loadAudio("Music/Gameplay 2.mp3");
+    gameMusic.setSound3D(false);
+    gameMusic.setLopping(true);
 }
 
 void Game::UpdateGame()
 {
+    // If music isn't playing, play game music and set the bool to true
+    if (!musicPlaying)
+    {
+        gameMusic.play();
+        musicPlaying = true;
+    }
+
     camera.setPosition(x - 450.0f, y - 250.0f, 0.05f);
     
-    // Make sure the camera is looking at the player on every frame (z needs to be negative for game to be visible)
+    // Make sure the camera is looking at the player on every frame
     camera.setTarget(camera.getPosition().x, camera.getPosition().y, 0.0f);
 
     pointer.UpdatePointer(Vector2(x, y), Vector2(400.0f, 200.0f));
@@ -42,6 +55,13 @@ void Game::ResetGame()
 {
     if (x != 0.0f) x = 0.0f; 
     if (y != 0.0f) y = 0.0f;
+
+    // Stop playing the game music and set music playing to false
+    if (musicPlaying)
+    {
+        gameMusic.stop();
+        musicPlaying = false;
+    }
 }
 
 void Game::HandlePlayerInput()

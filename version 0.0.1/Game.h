@@ -23,6 +23,8 @@ public:
 
 	void ResetGame();
 
+
+
 private:
 	void HandlePlayerInput();
 
@@ -32,6 +34,10 @@ private:
 	float x, y;
 
 	Pointer pointer;
+
+	Audio gameMusic;
+
+	bool musicPlaying;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include "Supernova.h"
 #include "Pointer.h"
 #include "AmmoDrop.h"
+#include "PlayerWeapon.h"
 
 #include "MouseCursor.h"
 
@@ -34,6 +35,11 @@ private:
 
 	void IterateThroughVisibleAmmo();
 
+	void HandleWeapons();
+	void SwitchBetweenWeapons();
+
+	void HandleAmmoCollisions();
+
 private:
 	Camera camera;
 
@@ -46,6 +52,15 @@ private:
 	bool musicPlaying;
 
 	std::array<AmmoDrop, 4> ammoDrops;
+
+	std::array<PlayerWeapon, 4> playerWeapons;
+
+	float shootDelay;
+
+	int weaponIndex;
+
+	bool keyPressed;
+	bool switchWeaponKeyPressed;
 };
 
 #endif

@@ -39,6 +39,7 @@ void init()
     Engine::setCanvasSize(1000, 600);
     Engine::setScene(&Global::scene);
     Engine::addSceneLayer(&Global::UI_scene);
+    Engine::setAutomaticTransparency(false);
 
     // Set engine callbacks
     Engine::onMouseMove = onMouseMove;

@@ -16,12 +16,12 @@ void PauseMenu::InitializePauseMenu()
 {
     for (int i = 0; i < resumeButton.size(); i++) resumeButton[i].setAnchorPreset(AnchorPreset::CENTER);
 
-    resumeButton[0].setTexture("Buttons/StartButtonNormal.png"); // Normal button
-    resumeButton[1].setTexture("Buttons/StartButtonHighlighted.png"); // Highlighted button
+    resumeButton[0].setTexture("Buttons/ResumeButtonNormal.png"); // Normal button
+    resumeButton[1].setTexture("Buttons/ResumeButtonHighlighted.png"); // Highlighted button
 
     for (int i = 0; i < resumeButton.size(); i++)
     {
-        resumeButton[i].setTexturePressed("Buttons/StartButtonClicked.png");
+        resumeButton[i].setTexturePressed("Buttons/ResumeButtonClicked.png");
         resumeButton[i].setPositionYOffset(20.0f);
         resumeButton[i].setSize(buttonSizeX, buttonSizeY);
         resumeButton[i].getComponent<ButtonComponent>().onRelease = ResumeGame;

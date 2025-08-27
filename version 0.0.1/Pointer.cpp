@@ -29,20 +29,7 @@ void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
 
 	ClampPointerToScreen(playerPos_, target_);
 
-	// Find the distance between the player and target to set pointer visibility
-	float dx = playerPos_.x - target_.x;
-	float dy = playerPos_.y - target_.y;
-	float distance = std::sqrtf(dx * dx + dy * dy);
-
-	if (distance <= 10.0f)
-	{
-		if (pointerImage.isVisible()) pointerImage.setVisible(false);
-	}
-
-	else
-	{
-		if (!pointerImage.isVisible()) pointerImage.setVisible(true);
-	}
+	if (!pointerImage.isVisible()) pointerImage.setVisible(true);
 }
 
 void Pointer::HidePointer()

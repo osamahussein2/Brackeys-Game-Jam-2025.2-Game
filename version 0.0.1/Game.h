@@ -5,8 +5,12 @@
 
 #include "Supernova.h"
 #include "Pointer.h"
+#include "AmmoDrop.h"
 
 #include "MouseCursor.h"
+
+// Include standard libraries
+#include <vector>
 
 using namespace Supernova;
 
@@ -28,6 +32,8 @@ public:
 private:
 	void HandlePlayerInput();
 
+	void IterateThroughVisibleAmmo();
+
 private:
 	Camera camera;
 
@@ -38,6 +44,8 @@ private:
 	Audio gameMusic;
 
 	bool musicPlaying;
+
+	std::array<AmmoDrop, 4> ammoDrops;
 };
 
 #endif

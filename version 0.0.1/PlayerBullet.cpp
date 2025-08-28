@@ -1,7 +1,7 @@
 #include "PlayerBullet.h"
 
 PlayerBullet::PlayerBullet(BulletType bulletType_, Scene* scene_, Vector3 position_, Vector2 direction_) : bulletType(), bullet(scene_),
-bulletLifeTime(0.0f)
+bulletLifeTime(0.0f), bulletFireSound(scene_)
 {
 	bulletType = bulletType_;
 	position = position_;
@@ -14,6 +14,11 @@ bulletLifeTime(0.0f)
 		bullet.setSize(30, 30);
 		bullet.setPosition(position_);
 		bullet.setVisible(true);
+
+		// Initialize bullet fire sound
+		bulletFireSound.loadAudio("Sounds/Gunfire.wav");
+		bulletFireSound.setSound3D(false);
+		bulletFireSound.play();
 		break;
 
 	case BulletType::ShotgunBullet:
@@ -21,6 +26,11 @@ bulletLifeTime(0.0f)
 		bullet.setSize(30, 30);
 		bullet.setPosition(position_);
 		bullet.setVisible(true);
+
+		// Initialize bullet fire sound
+		bulletFireSound.loadAudio("Sounds/Gunfire.wav");
+		bulletFireSound.setSound3D(false);
+		bulletFireSound.play();
 		break;
 
 	case BulletType::MicroSMGBullet:
@@ -28,6 +38,11 @@ bulletLifeTime(0.0f)
 		bullet.setSize(30, 30);
 		bullet.setPosition(position_);
 		bullet.setVisible(true);
+
+		// Initialize bullet fire sound
+		bulletFireSound.loadAudio("Sounds/Gunfire.wav");
+		bulletFireSound.setSound3D(false);
+		bulletFireSound.play();
 		break;
 
 	case BulletType::SMGBullet :
@@ -35,6 +50,11 @@ bulletLifeTime(0.0f)
 		bullet.setSize(30, 30);
 		bullet.setPosition(position_);
 		bullet.setVisible(true);
+
+		// Initialize bullet fire sound
+		bulletFireSound.loadAudio("Sounds/Gunfire.wav");
+		bulletFireSound.setSound3D(false);
+		bulletFireSound.play();
 		break;
 
 	default:
@@ -71,4 +91,9 @@ bool PlayerBullet::BulletCollision(Vector2& gameObject_, Vector2& size_)
 void PlayerBullet::HideBullet()
 {
 	bullet.setVisible(false);
+}
+
+void PlayerBullet::DestroyBulletComponents()
+{
+	bulletFireSound.destroyAudio();
 }

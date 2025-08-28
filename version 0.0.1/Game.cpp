@@ -466,6 +466,7 @@ void Game::UpdatePlayerBullets()
         // Destroy the bullet once its lifetime goes past a certain value
         if (playerBullet->GetBulletLifeTime() >= 1.5f)
         {
+            playerBullet->DestroyBulletComponents();
              bulletIterator = playerBullets.erase(bulletIterator);
         }
 
@@ -484,6 +485,8 @@ Vector2 Game::GetPlayerCenterPoint() const
 void Game::CleanGame()
 {
     gameMusic.destroyAudio();
+
+    for (int i = 0; i < playerBullets.size(); i++) playerBullets[i].get()->DestroyBulletComponents();
 
     if (!playerBullets.empty()) playerBullets.clear();
 

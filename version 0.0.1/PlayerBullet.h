@@ -29,9 +29,13 @@ public:
 
 	float GetBulletLifeTime() const { return bulletLifeTime; }
 
+	void DestroyBulletComponents();
+
 private:
 	BulletType bulletType;
 	Image bullet;
+
+	Audio bulletFireSound;
 
 	float bulletLifeTime;
 

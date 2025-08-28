@@ -480,3 +480,18 @@ Vector2 Game::GetPlayerCenterPoint() const
 {
     return Vector2(x + (static_cast<float>(playerSizeX) / 2.5f), y + (static_cast<float>(playerSizeY) / 2.5f));
 }
+
+void Game::CleanGame()
+{
+    gameMusic.destroyAudio();
+
+    if (!playerBullets.empty()) playerBullets.clear();
+
+    for (PlayerWeapon& playerWeapon : playerWeapons)
+    {
+        playerWeapon.ResetWeapons();
+        playerWeapon.ClearAmmoHUDs();
+    }
+
+    player.clearInstances();
+}

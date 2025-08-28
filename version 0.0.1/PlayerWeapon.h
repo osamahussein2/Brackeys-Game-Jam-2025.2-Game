@@ -35,9 +35,19 @@ public:
 
 	void IncreaseAmmo(int ammoValue_);
 
+	void ClearAmmoHUDs();
+
+private:
+	void UpdatePistolAmmoHUD();
+	void UpdateShotgunAmmoHUD();
+	void UpdateMicroSMGAmmoHUD();
+	void UpdateSMGAmmoHUD();
+
 private:
 	WeaponType weaponType;
+
 	Image weapon;
+	std::array<std::vector<Image>, 2> ammoHUDs;
 
 	Text weaponHUDText;
 

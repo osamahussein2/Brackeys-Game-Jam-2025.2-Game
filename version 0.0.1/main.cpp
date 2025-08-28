@@ -110,6 +110,8 @@ void quit()
 {
     Global::scene.destroy();
     Global::UI_scene.destroy();
+
+    game.CleanGame();
 }
 
 void onMouseMove(float x, float y, int mods)

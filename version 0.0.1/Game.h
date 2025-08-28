@@ -31,6 +31,8 @@ public:
 
 	Vector2 GetPlayerCenterPoint() const;
 
+	void CleanGame();
+
 private:
 	void HandlePlayerInput();
 

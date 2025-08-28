@@ -7,6 +7,7 @@
 #include "Pointer.h"
 #include "AmmoDrop.h"
 #include "PlayerWeapon.h"
+#include "PlayerBullet.h"
 
 #include "MouseCursor.h"
 
@@ -40,10 +41,13 @@ private:
 
 	void HandleAmmoCollisions();
 
+	void UpdatePlayerBullets();
+
 private:
 	Camera camera;
 
 	float x, y;
+	float velocityX, velocityY;
 
 	Pointer pointer;
 
@@ -61,6 +65,8 @@ private:
 
 	bool keyPressed;
 	bool switchWeaponKeyPressed;
+
+	std::vector<std::unique_ptr<PlayerBullet>> playerBullets;
 };
 
 #endif

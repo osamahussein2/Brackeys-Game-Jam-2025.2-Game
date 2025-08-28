@@ -4,7 +4,7 @@
 Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f), 
 gameMusic(gameScene), musicPlaying(false), ammoDrops{ gameScene, gameScene, gameScene, gameScene }, 
 playerWeapons{ UI_scene, UI_scene, UI_scene, UI_scene }, shootDelay(0.3f), weaponIndex(1), keyPressed(false),
-switchWeaponKeyPressed(false)
+switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f)
 {
 
 }
@@ -53,6 +53,8 @@ void Game::UpdateGame()
     HandleWeapons();
     SwitchBetweenWeapons();
 
+    UpdatePlayerBullets();
+
     for (AmmoDrop& ammoDrop : ammoDrops)
     {
         ammoDrop.UpdateAmmoDrop();
@@ -76,6 +78,8 @@ void Game::HideGame()
 
     for (AmmoDrop& ammoDrop : ammoDrops) ammoDrop.HideAmmoDrop();
     for (PlayerWeapon& playerWeapon : playerWeapons) playerWeapon.HideWeapons();
+
+    for (int i = 0; i < playerBullets.size(); i++) playerBullets[i]->HideBullet();
 }
 
 void Game::ResetGame()
@@ -93,7 +97,12 @@ void Game::ResetGame()
     for (AmmoDrop& ammoDrop : ammoDrops) ammoDrop.ResetAmmoDropValues();
     for (PlayerWeapon& playerWeapon : playerWeapons) playerWeapon.ResetWeapons();
 
+    if (!playerBullets.empty()) playerBullets.clear();
+
     if (weaponIndex != 1) weaponIndex = 1;
+
+    if (velocityX != 1.0f) velocityX = 1.0f;
+    if (velocityY != 0.0f) velocityY = 0.0f;
 }
 
 void Game::HandlePlayerInput()
@@ -101,21 +110,63 @@ void Game::HandlePlayerInput()
     if (Input::isKeyPressed(S_KEY_UP)) {
 
         y += 1;
+        if (velocityY != 1.0f) velocityY = 1.0f;
+
+        // Update shooting velocities
+        if (!Input::isKeyPressed(S_KEY_LEFT) && !Input::isKeyPressed(S_KEY_RIGHT))
+        {
+            if (velocityX != 0.0f) velocityX = 0.0f;
+        }
+
+        else if (Input::isKeyPressed(S_KEY_RIGHT))
+        {
+            if (velocityX != 1.0f) velocityX = 1.0f;
+        }
+
+        else if (Input::isKeyPressed(S_KEY_LEFT))
+        {
+            if (velocityX != -1.0f) velocityX = -1.0f;
+        }
     }
 
     if (Input::isKeyPressed(S_KEY_DOWN))
     {
         y -= 1;
+        if (velocityY != -1.0f) velocityY = -1.0f;
+
+        // Update shooting velocities
+        if (!Input::isKeyPressed(S_KEY_LEFT) && !Input::isKeyPressed(S_KEY_RIGHT))
+        {
+            if (velocityX != 0.0f) velocityX = 0.0f;
+        }
+
+        else if (Input::isKeyPressed(S_KEY_RIGHT))
+        {
+            if (velocityX != 1.0f) velocityX = 1.0f;
+        }
+
+        else if (Input::isKeyPressed(S_KEY_LEFT))
+        {
+            if (velocityX != -1.0f) velocityX = -1.0f;
+        }
+    }
+
+    else if (!Input::isKeyPressed(S_KEY_UP) && !Input::isKeyPressed(S_KEY_DOWN)) // Only for determining bullet velocity
+    {
+        if (velocityY != 0.0f) velocityY = 0.0f;
+        if (velocityX != 1.0f) velocityX = 1.0f;
     }
 
     if (Input::isKeyPressed(S_KEY_LEFT))
     {
         x -= 1;
+        if (velocityX != -1.0f) velocityX = -1.0f;
     }
 
     if (Input::isKeyPressed(S_KEY_RIGHT))
     {
         x += 1;
+        if (velocityX != 1.0f) velocityX = 1.0f;
     }
 
     // Pause the game when pressing ESCAPE
@@ -168,6 +219,9 @@ void Game::HandleWeapons()
         {
             playerWeapons[0].ShootWeapon();
 
+            playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::PistolBullet, &Global::scene,
+                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+
             keyPressed = true;
 
             shootDelay = 0.0f;
@@ -200,6 +254,9 @@ void Game::HandleWeapons()
             && !keyPressed)
         {
             playerWeapons[1].ShootWeapon();
+
+            playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::ShotgunBullet, &Global::scene,
+                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -234,6 +291,9 @@ void Game::HandleWeapons()
         {
             playerWeapons[2].ShootWeapon();
 
+            playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::MicroSMGBullet, &Global::scene,
+                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+
             keyPressed = true;
 
             shootDelay = 0.0f;
@@ -266,6 +326,9 @@ void Game::HandleWeapons()
             && !keyPressed)
         {
             playerWeapons[3].ShootWeapon();
+
+            playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::SMGBullet, &Global::scene,
+                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -334,5 +397,30 @@ void Game::HandleAmmoCollisions()
     {
         playerWeapons[3].IncreaseAmmo(30);
         ammoDrops[3].SetHideAmmo();
+    }
+}
+
+void Game::UpdatePlayerBullets()
+{
+    // Update player bullets for all elements
+    for (int i = 0; i < playerBullets.size(); i++)
+    {
+        playerBullets[i]->UpdateBullet();
+    }
+
+    for (auto bulletIterator = playerBullets.begin(); bulletIterator != playerBullets.end();)
+    {
+        PlayerBullet* playerBullet = bulletIterator->get();
+
+        // Destroy the bullet once its lifetime goes past a certain value
+        if (playerBullet->GetBulletLifeTime() >= 1.5f)
+        {
+             bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else
+        {
+            ++bulletIterator; // Keep iterating through the player bullets
+        }
     }
 }

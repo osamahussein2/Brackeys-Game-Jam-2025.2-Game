@@ -24,7 +24,7 @@ public:
 	void InitializeAmmoDrop(AmmoType ammoType_, Vector3 position_);
 	void UpdateAmmoDrop();
 
-	bool AmmoDropCollision(Vector2& player_);
+	bool AmmoDropCollision(Vector2& player_, Vector2& size_);
 
 	void HideAmmoDrop();
 

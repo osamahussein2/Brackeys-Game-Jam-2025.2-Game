@@ -4,7 +4,7 @@
 Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f), 
 gameMusic(gameScene), musicPlaying(false), ammoDrops{ gameScene, gameScene, gameScene, gameScene }, 
 playerWeapons{ UI_scene, UI_scene, UI_scene, UI_scene }, shootDelay(0.3f), weaponIndex(1), keyPressed(false),
-switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f)
+switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f), player(gameScene), frameX(0)
 {
 
 }
@@ -23,16 +23,31 @@ void Game::InitializeGame()
     // Initialize game objects
     pointer.InitializePointer("Pointers/YellowPointer.png");
 
+    player.setTexture("Sprites/PlayerSprite.png");
+    
+    for (int j = 0; j < 8; j++)
+    {
+        player.addFrame(j, "", Rect(0.0 / 7, (j + 1.0) / 8, 1.0 / 7, 1.0 / 8));
+    }
+
+    player.setFrame(0);
+    player.setPosition(x, y, 0);
+    player.setName("Player");
+    player.setSize(playerSizeX, playerSizeY);
+
+    player.startAnimation(0, 7, 150, true);
+    player.setVisible(false);
+
     // Initialize gameplay music
     gameMusic.loadAudio("Music/Gameplay 2.mp3");
     gameMusic.setSound3D(false);
     gameMusic.setLopping(true);
 
     // Initialize ammo drops
-    ammoDrops[0].InitializeAmmoDrop(AmmoType::PistolAmmo, Vector3(200.0f, 200.0f, -0.1f));
-    ammoDrops[1].InitializeAmmoDrop(AmmoType::ShotgunAmmo, Vector3(400.0f, 200.0f, -0.1f));
-    ammoDrops[2].InitializeAmmoDrop(AmmoType::MicroSMGAmmo, Vector3(400.0f, 600.0f, -0.1f));
-    ammoDrops[3].InitializeAmmoDrop(AmmoType::SMGAmmo, Vector3(800.0f, 800.0f, -0.1f));
+    ammoDrops[0].InitializeAmmoDrop(AmmoType::PistolAmmo, Vector3(200.0f, 200.0f, 0.1f));
+    ammoDrops[1].InitializeAmmoDrop(AmmoType::ShotgunAmmo, Vector3(400.0f, 200.0f, 0.1f));
+    ammoDrops[2].InitializeAmmoDrop(AmmoType::MicroSMGAmmo, Vector3(400.0f, 600.0f, 0.1f));
+    ammoDrops[3].InitializeAmmoDrop(AmmoType::SMGAmmo, Vector3(800.0f, 800.0f, 0.1f));
 
     // Initialize player weapons
     playerWeapons[0].InitializeWeapon(WeaponType::Pistol);
@@ -62,10 +77,20 @@ void Game::UpdateGame()
 
     HandleAmmoCollisions();
 
-    camera.setPosition(x - 450.0f, y - 250.0f, 0.05f);
+    camera.setPosition(x - 450.0f, y - 250.0f, 0.0f);
     
     // Make sure the camera is looking at the player on every frame
-    camera.setTarget(camera.getPosition().x, camera.getPosition().y, 0.0f);
+    camera.setTarget(camera.getPosition().x, camera.getPosition().y, -0.05f);
+
+    // Update player animation
+    for (int j = 0; j < 8; j++)
+        player.addFrame(j, "", Rect((frameX - 1.0f) / 7, (j + 1.0) / 8, 1.0 / 7, 1.0 / 8));
+
+    // Show the player
+    player.setVisible(true);
+
+    // Set the player's position using x and y values
+    player.setPosition(x, y, 0.0f);
 
     IterateThroughVisibleAmmo();
 
@@ -80,12 +105,16 @@ void Game::HideGame()
     for (PlayerWeapon& playerWeapon : playerWeapons) playerWeapon.HideWeapons();
 
     for (int i = 0; i < playerBullets.size(); i++) playerBullets[i]->HideBullet();
+
+    player.setVisible(false);
 }
 
 void Game::ResetGame()
 {
     if (x != 0.0f) x = 0.0f; 
     if (y != 0.0f) y = 0.0f;
+    
+    frameX = 0;
 
     // Stop playing the game music and set music playing to false
     if (musicPlaying)
@@ -112,6 +141,8 @@ void Game::HandlePlayerInput()
         y += 1;
         if (velocityY != 1.0f) velocityY = 1.0f;
 
+        frameX = 5;
+
         // Update shooting velocities
         if (!Input::isKeyPressed(S_KEY_LEFT) && !Input::isKeyPressed(S_KEY_RIGHT))
         {
@@ -133,6 +164,8 @@ void Game::HandlePlayerInput()
     {
         y -= 1;
         if (velocityY != -1.0f) velocityY = -1.0f;
+
+        frameX = 4;
 
         // Update shooting velocities
         if (!Input::isKeyPressed(S_KEY_LEFT) && !Input::isKeyPressed(S_KEY_RIGHT))
@@ -161,12 +194,22 @@ void Game::HandlePlayerInput()
     {
         x -= 1;
         if (velocityX != -1.0f) velocityX = -1.0f;
+        
+        frameX = 7;
     }
 
     if (Input::isKeyPressed(S_KEY_RIGHT))
     {
         x += 1;
         if (velocityX != 1.0f) velocityX = 1.0f;
+
+        frameX = 6;
+    }
+
+    else if (!Input::isKeyPressed(S_KEY_UP) && !Input::isKeyPressed(S_KEY_DOWN) && !Input::isKeyPressed(S_KEY_LEFT) &&
+        !Input::isKeyPressed(S_KEY_RIGHT))
+    {
+        frameX = 1;
     }
 
     // Pause the game when pressing ESCAPE
@@ -220,7 +263,8 @@ void Game::HandleWeapons()
             playerWeapons[0].ShootWeapon();
 
             playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::PistolBullet, &Global::scene,
-                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+                Vector3(GetPlayerCenterPoint().x, GetPlayerCenterPoint().y, camera.getPosition().z), 
+                Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -256,7 +300,8 @@ void Game::HandleWeapons()
             playerWeapons[1].ShootWeapon();
 
             playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::ShotgunBullet, &Global::scene,
-                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+                Vector3(GetPlayerCenterPoint().x, GetPlayerCenterPoint().y, camera.getPosition().z), 
+                Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -292,7 +337,8 @@ void Game::HandleWeapons()
             playerWeapons[2].ShootWeapon();
 
             playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::MicroSMGBullet, &Global::scene,
-                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+                Vector3(GetPlayerCenterPoint().x, GetPlayerCenterPoint().y, camera.getPosition().z), 
+                Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -328,7 +374,8 @@ void Game::HandleWeapons()
             playerWeapons[3].ShootWeapon();
 
             playerBullets.push_back(std::make_unique<PlayerBullet>(BulletType::SMGBullet, &Global::scene,
-                Vector3(x, y, camera.getPosition().z), Vector2(velocityX, velocityY)));
+                Vector3(GetPlayerCenterPoint().x, GetPlayerCenterPoint().y, camera.getPosition().z), 
+                Vector2(velocityX, velocityY)));
 
             keyPressed = true;
 
@@ -375,25 +422,29 @@ void Game::SwitchBetweenWeapons()
 
 void Game::HandleAmmoCollisions()
 {
-    if (ammoDrops[0].AmmoDropCollision(Vector2(x, y))) // If player collides with pistol ammo
+    // If player collides with pistol ammo
+    if (ammoDrops[0].AmmoDropCollision(Vector2(x, y), Vector2(playerSizeX, playerSizeY)))
     {
         playerWeapons[0].IncreaseAmmo(8);
         ammoDrops[0].SetHideAmmo();
     }
 
-    else if (ammoDrops[1].AmmoDropCollision(Vector2(x, y))) // If player collides with shotgun ammo
+    // If player collides with shotgun ammo
+    else if (ammoDrops[1].AmmoDropCollision(Vector2(x, y), Vector2(playerSizeX, playerSizeY)))
     {
         playerWeapons[1].IncreaseAmmo(4);
         ammoDrops[1].SetHideAmmo();
     }
 
-    else if (ammoDrops[2].AmmoDropCollision(Vector2(x, y))) // If player collides with micro SMG ammo
+    // If player collides with micro SMG ammo
+    else if (ammoDrops[2].AmmoDropCollision(Vector2(x, y), Vector2(playerSizeX, playerSizeY)))
     {
         playerWeapons[2].IncreaseAmmo(25);
         ammoDrops[2].SetHideAmmo();
     }
 
-    else if (ammoDrops[3].AmmoDropCollision(Vector2(x, y))) // If player collides with SMG ammo
+    // If player collides with SMG ammo
+    else if (ammoDrops[3].AmmoDropCollision(Vector2(x, y), Vector2(playerSizeX, playerSizeY)))
     {
         playerWeapons[3].IncreaseAmmo(30);
         ammoDrops[3].SetHideAmmo();
@@ -423,4 +474,9 @@ void Game::UpdatePlayerBullets()
             ++bulletIterator; // Keep iterating through the player bullets
         }
     }
+}
+
+Vector2 Game::GetPlayerCenterPoint() const
+{
+    return Vector2(x + (static_cast<float>(playerSizeX) / 2.5f), y + (static_cast<float>(playerSizeY) / 2.5f));
 }

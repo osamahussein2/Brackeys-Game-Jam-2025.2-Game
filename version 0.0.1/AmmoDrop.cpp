@@ -67,11 +67,11 @@ void AmmoDrop::UpdateAmmoDrop()
 	}
 }
 
-bool AmmoDrop::AmmoDropCollision(Vector2& player_)
+bool AmmoDrop::AmmoDropCollision(Vector2& player_, Vector2& size_)
 {
 	// Make sure the collision occurs between the ammo and player while the ammo isn't hidden yet
-	if (ammo.getPosition().x + 60.0f >= player_.x && ammo.getPosition().x <= player_.x + 50.0f &&
-		ammo.getPosition().y + 60.0f >= player_.y && ammo.getPosition().y <= player_.y + 50.0f && !hideAmmo)
+	if (ammo.getPosition().x + 60.0f >= player_.x && ammo.getPosition().x <= player_.x + size_.x &&
+		ammo.getPosition().y + 60.0f >= player_.y && ammo.getPosition().y <= player_.y + size_.y && !hideAmmo)
 	{
 		return true;
 	}
@@ -81,16 +81,16 @@ bool AmmoDrop::AmmoDropCollision(Vector2& player_)
 
 void AmmoDrop::HideAmmoDrop()
 {
-	if (ammo.isVisible()) ammo.setVisible(false);
+	ammo.setVisible(false);
 }
 
 void AmmoDrop::SetHideAmmo()
 {
-	if (hideAmmo != true) hideAmmo = true;
+	hideAmmo = true;
 }
 
 void AmmoDrop::ResetAmmoDropValues()
 {
-	if (hideAmmo != false) hideAmmo = false;
-	if (ammoHiddenTime != 0.0f) ammoHiddenTime = 0.0f;
+	hideAmmo = false;
+	ammoHiddenTime = 0.0f;
 }

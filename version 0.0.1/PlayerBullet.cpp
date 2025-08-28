@@ -48,7 +48,7 @@ PlayerBullet::~PlayerBullet()
 
 void PlayerBullet::UpdateBullet()
 {
-	if (!bullet.isVisible()) bullet.setVisible(true);
+	bullet.setVisible(true);
 
 	bulletLifeTime += 0.016f;
 
@@ -70,5 +70,5 @@ bool PlayerBullet::BulletCollision(Vector2& gameObject_, Vector2& size_)
 
 void PlayerBullet::HideBullet()
 {
-	if (bullet.isVisible()) bullet.setVisible(false);
+	bullet.setVisible(false);
 }

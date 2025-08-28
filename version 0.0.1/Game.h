@@ -29,7 +29,7 @@ public:
 
 	void ResetGame();
 
-
+	Vector2 GetPlayerCenterPoint() const;
 
 private:
 	void HandlePlayerInput();
@@ -67,6 +67,13 @@ private:
 	bool switchWeaponKeyPressed;
 
 	std::vector<std::unique_ptr<PlayerBullet>> playerBullets;
+
+	Sprite player;
+
+	int frameX;
+
+	static constexpr int playerSizeX = 64;
+	static constexpr int playerSizeY = 80;
 };
 
 #endif

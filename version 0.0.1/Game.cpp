@@ -227,12 +227,35 @@ void Game::HandlePlayerInput()
 
 void Game::IterateThroughVisibleAmmo()
 {
+    float dx[4] = { x - ammoDrops[0].GetAmmoPosition().x, x - ammoDrops[1].GetAmmoPosition().x,
+    x - ammoDrops[2].GetAmmoPosition().x, x - ammoDrops[3].GetAmmoPosition().x };
+
+    float dy[4] = { y - ammoDrops[0].GetAmmoPosition().y, y - ammoDrops[1].GetAmmoPosition().y,
+    y - ammoDrops[2].GetAmmoPosition().y, y - ammoDrops[3].GetAmmoPosition().y };
+
+    float distance[4] = { std::sqrtf(dx[0] * dx[0] + dy[0] * dy[0]), std::sqrtf(dx[1] * dx[1] + dy[1] * dy[1]),
+    std::sqrtf(dx[2] * dx[2] + dy[2] * dy[2]), std::sqrtf(dx[3] * dx[3] + dy[3] * dy[3]) };
+
     for (AmmoDrop& ammoDrop : ammoDrops)
     {
         if (!ammoDrop.GetHideAmmo())
         {
-            pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrop.GetAmmoPosition().x, ammoDrop.GetAmmoPosition().y),
-                Vector2(50.0f, 200.0f));
+            // Update the pointer's target based on closest distance between the player and one of the ammo drops
+            if (distance[0] < distance[1] && distance[0] < distance[2] && distance[0] < distance[3]
+                && !ammoDrops[0].GetHideAmmo())
+                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[0].GetAmmoPosition()));
+
+            else if (distance[1] < distance[0] && distance[1] < distance[2] && distance[1] < distance[3]
+                && !ammoDrops[1].GetHideAmmo())
+                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[1].GetAmmoPosition()));
+
+            else if (distance[2] < distance[0] && distance[2] < distance[1] && distance[2] < distance[3]
+                && !ammoDrops[2].GetHideAmmo())
+                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[2].GetAmmoPosition()));
+
+            else if (distance[3] < distance[0] && distance[3] < distance[1] && distance[3] < distance[2]
+                && !ammoDrops[3].GetHideAmmo())
+                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[3].GetAmmoPosition()));
         }
     }
 

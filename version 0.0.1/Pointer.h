@@ -17,12 +17,12 @@ public:
 	~Pointer();
 
 	void InitializePointer(std::string filePath_);
-	void UpdatePointer(Vector2& playerPos_, Vector2& target_, Vector2 offset_);
+	void UpdatePointer(Vector2& playerPos_, Vector2& target_);
 
 	void HidePointer();
 
 private:
-	
+	void ClampPointerToScreen(Vector2& playerPos_, Vector2& target_);
 
 private:
 	Image pointerImage;

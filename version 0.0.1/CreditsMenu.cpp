@@ -2,7 +2,7 @@
 #include "Global.h"
 
 CreditsMenu::CreditsMenu(Scene* scene) : backButton{ scene, scene }, creditMembersText{ scene, scene, scene, scene, scene,
-scene, scene }, textPosY(100.0f)
+scene, scene }, textPosY(100.0f), brackeysLogo(scene)
 {
 }
 
@@ -72,6 +72,22 @@ void CreditsMenu::InitializeCreditsMenu()
     {
         creditMembersText[i].setVisible(false);
     }
+
+    // Initialize brackeys logo
+    brackeysLogo.setTexture("Sprites/Logo-1.png");
+
+    for (int i = 0; i < 12; i++)
+    {
+        brackeysLogo.addFrame(i, "", Rect((i + 1.0) / 12, 0.0f / 1, 1.0 / 12, 1.0 / 1));
+    }
+
+    brackeysLogo.setFrame(0);
+    brackeysLogo.setPosition(410.0f, 320.0f, 0.0f);
+    brackeysLogo.setName("BrackeysLogo");
+    brackeysLogo.setSize(200, 100);
+
+    brackeysLogo.startAnimation(0, 11, 200, true);
+    brackeysLogo.setVisible(false);
 }
 
 void CreditsMenu::UpdateCreditsMenu()
@@ -90,7 +106,14 @@ void CreditsMenu::HideCreditsMenu()
         if (creditMembersText[i].isVisible()) creditMembersText[i].setVisible(false);
     }
 
+    if (brackeysLogo.isVisible()) brackeysLogo.setVisible(false);
+
     if (textPosY != 100.0f) textPosY = 100.0f; // Reset credit members texts back to its original position
+}
+
+void CreditsMenu::CleanCreditsMenu()
+{
+    brackeysLogo.clearInstances();
 }
 
 void CreditsMenu::GoBackToMain()
@@ -112,6 +135,8 @@ void CreditsMenu::ScrollingCredits()
     creditMembersText[5].setPositionOffset(Vector2(10.0f, 250.0f + textPosY));
     creditMembersText[6].setPositionOffset(Vector2(10.0f, 275.0f + textPosY));
 
+    brackeysLogo.setPosition(Vector3(420.0f, 320.0f + textPosY, 0.0f));
+
     for (int i = 0; i < creditMembersText.size(); i++)
     {
         // Show the credit members texts once they are nearly at the center of the screen
@@ -127,11 +152,20 @@ void CreditsMenu::ScrollingCredits()
         }
     }
 
+    if (brackeysLogo.getPosition().y <= 400.0f)
+    {
+        if (!brackeysLogo.isVisible()) brackeysLogo.setVisible(true);
+    }
+    else
+    {
+        if (brackeysLogo.isVisible()) brackeysLogo.setVisible(false);
+    }
+
     // Reset scrolling credits after they all reach the top of the screen
     if (creditMembersText[0].getPositionYOffset() <= -350.0f && creditMembersText[1].getPositionYOffset() <= -350.0f &&
         creditMembersText[2].getPositionYOffset() <= -350.0f && creditMembersText[3].getPositionYOffset() <= -350.0f &&
         creditMembersText[4].getPositionYOffset() <= -350.0f && creditMembersText[5].getPositionYOffset() <= -350.0f &&
-        creditMembersText[6].getPositionYOffset() <= -350.0f)
+        creditMembersText[6].getPositionYOffset() <= -350.0f && brackeysLogo.getPosition().y <= -100.0f)
     {
         textPosY = 100.0f;
     }

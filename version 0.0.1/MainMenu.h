@@ -53,6 +53,8 @@ private:
 	int selectedOption;
 
 	bool keyPressed;
+
+	static bool firstTimePlaying;
 };
 
 #endif

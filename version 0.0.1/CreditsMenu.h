@@ -20,6 +20,8 @@ public:
 
 	void HideCreditsMenu();
 
+	void CleanCreditsMenu();
+
 private:
 	static void GoBackToMain();
 
@@ -30,6 +32,8 @@ private:
 	std::array<Button, 2> backButton; // 0 for normal button, 1 for hightlighted (or hovered) button
 
 	std::array<Text, 7> creditMembersText;
+
+	Sprite brackeysLogo;
 
 	static constexpr int buttonSizeX = 100;
 	static constexpr int buttonSizeY = 100;

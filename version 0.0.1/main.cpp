@@ -4,6 +4,7 @@
 #include "CreditsMenu.h"
 #include "Game.h"
 #include "PauseMenu.h"
+#include "BrackeysLogo.h"
 
 #include "Global.h"
 
@@ -13,6 +14,7 @@ MainMenu mainMenu(&Global::UI_scene);
 CreditsMenu creditsMenu(&Global::UI_scene);
 Game game(&Global::scene, &Global::UI_scene);
 PauseMenu pauseMenu(&Global::UI_scene);
+BrackeysLogo brackeysLogo(&Global::UI_scene);
 
 // Add functions for updating/quitting the game
 void update();
@@ -30,6 +32,7 @@ void init()
     mainMenu.InitializeMainMenu();
     creditsMenu.InitializeCreditsMenu();
     pauseMenu.InitializePauseMenu();
+    brackeysLogo.InitializeBrackeysLogo();
 
     // Initialize game
     game.InitializeGame();
@@ -83,6 +86,16 @@ void update()
 
         break;
 
+    case GameState::BrackeysLogo:
+        
+        // Update brackeys logo
+        brackeysLogo.UpdateBrackeysLogo();
+
+        // Hide any other menu
+        mainMenu.HideMainMenu();
+
+        break;
+
     case GameState::Playing:
 
         game.UpdateGame();
@@ -114,6 +127,9 @@ void quit()
     Global::UI_scene.destroy();
 
     mainMenu.CleanMainMenuComponents();
+    creditsMenu.CleanCreditsMenu();
+    brackeysLogo.CleanBrackeysLogo();
+
     game.CleanGame();
 }
 

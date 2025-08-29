@@ -9,6 +9,7 @@ enum class GameState
     SupernovaEngine,
     MainMenu,
     Credits,
+    BrackeysLogo,
     Playing,
     Paused
 };

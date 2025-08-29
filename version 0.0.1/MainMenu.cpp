@@ -1,10 +1,12 @@
 #include "MainMenu.h"
 #include "Global.h"
 
+bool MainMenu::firstTimePlaying = true;
+
 MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton{ scene, scene }, quitButton{ scene, scene },
 selectedOption(0), keyPressed(false), menuMusic(scene), musicPlaying(false)
 {
-
+    firstTimePlaying = true;
 }
 
 MainMenu::~MainMenu()
@@ -101,7 +103,16 @@ void MainMenu::HideMainMenu()
 
 void MainMenu::PlayGame()
 {
-    Global::gameState = GameState::Playing;
+    if (firstTimePlaying)
+    {
+        Global::gameState = GameState::BrackeysLogo;
+        firstTimePlaying = false;
+    }
+
+    else
+    {
+        Global::gameState = GameState::Playing;
+    }
 }
 
 void MainMenu::Credits()
@@ -173,8 +184,19 @@ void MainMenu::SwitchBetweenMenuOption()
 
         if (Input::isKeyPressed(S_KEY_ENTER) && !Global::enterKeyPressed)
         {
-            Global::gameState = GameState::Playing;
-            Global::enterKeyPressed = true;
+            if (firstTimePlaying)
+            {
+                Global::gameState = GameState::BrackeysLogo;
+                firstTimePlaying = false;
+
+                Global::enterKeyPressed = true;
+            }
+
+            else
+            {
+                Global::gameState = GameState::Playing;
+                Global::enterKeyPressed = true;
+            }
         }
 
         else if (!Input::isKeyPressed(S_KEY_ENTER) && Global::enterKeyPressed)

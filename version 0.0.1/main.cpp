@@ -91,6 +91,8 @@ void update()
         mainMenu.HideMainMenu();
         pauseMenu.HidePauseMenu();
 
+        mainMenu.StopMenuMusic();
+
         break;
 
     case GameState::Paused:
@@ -111,6 +113,7 @@ void quit()
     Global::scene.destroy();
     Global::UI_scene.destroy();
 
+    mainMenu.CleanMainMenuComponents();
     game.CleanGame();
 }
 

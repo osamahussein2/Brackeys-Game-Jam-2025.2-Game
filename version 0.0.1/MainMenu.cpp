@@ -2,7 +2,7 @@
 #include "Global.h"
 
 MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton{ scene, scene }, quitButton{ scene, scene },
-selectedOption(0), keyPressed(false)
+selectedOption(0), keyPressed(false), menuMusic(scene), musicPlaying(false)
 {
 
 }
@@ -62,10 +62,22 @@ void MainMenu::InitializeMainMenu()
 
     quitButton[0].setVisible(false);
     quitButton[1].setVisible(false);
+
+    // Initialize menu music
+    menuMusic.loadAudio("Music/Screen.mp3");
+    menuMusic.setSound3D(false);
+    menuMusic.setLopping(true);
 }
 
 void MainMenu::UpdateMainMenu()
 {
+    // If music isn't playing, play menu music and set the bool to true
+    if (!musicPlaying)
+    {
+        menuMusic.play();
+        musicPlaying = true;
+    }
+
     UpdatePlayButtonInteraction();
     UpdateCreditsButtonInteraction();
     UpdateQuitButtonInteraction();
@@ -285,4 +297,19 @@ void MainMenu::HandleInput()
     {
         keyPressed = false;
     }
+}
+
+void MainMenu::StopMenuMusic()
+{
+    // Stop playing the menu music and set music playing to false
+    if (musicPlaying)
+    {
+        menuMusic.stop();
+        musicPlaying = false;
+    }
+}
+
+void MainMenu::CleanMainMenuComponents()
+{
+    menuMusic.destroyAudio();
 }

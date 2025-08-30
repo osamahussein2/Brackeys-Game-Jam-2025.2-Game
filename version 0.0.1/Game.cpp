@@ -4,7 +4,7 @@
 Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f), 
 gameMusic(gameScene), musicPlaying(false), ammoDrops{ gameScene, gameScene, gameScene, gameScene }, 
 playerWeapons{ UI_scene, UI_scene, UI_scene, UI_scene }, shootDelay(0.3f), weaponIndex(1), keyPressed(false),
-switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f), player(gameScene), frameX(0)
+switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f), player(gameScene), frameX(0), movedLeft(false)
 {
 
 }
@@ -114,7 +114,9 @@ void Game::ResetGame()
     if (x != 0.0f) x = 0.0f; 
     if (y != 0.0f) y = 0.0f;
     
-    frameX = 0;
+    if (frameX != 0) frameX = 0;
+
+    if (movedLeft != false) movedLeft = false;
 
     // Stop playing the game music and set music playing to false
     if (musicPlaying)
@@ -187,13 +189,17 @@ void Game::HandlePlayerInput()
     else if (!Input::isKeyPressed(S_KEY_UP) && !Input::isKeyPressed(S_KEY_DOWN)) // Only for determining bullet velocity
     {
         if (velocityY != 0.0f) velocityY = 0.0f;
-        if (velocityX != 1.0f) velocityX = 1.0f;
+
+        if (velocityX != 1.0f && !movedLeft) velocityX = 1.0f;
+        else if (velocityX != -1.0f && movedLeft) velocityX = -1.0f;
     }
 
     if (Input::isKeyPressed(S_KEY_LEFT))
     {
         x -= 1;
         if (velocityX != -1.0f) velocityX = -1.0f;
+
+        movedLeft = true;
         
         frameX = 7;
     }
@@ -202,6 +208,8 @@ void Game::HandlePlayerInput()
     {
         x += 1;
         if (velocityX != 1.0f) velocityX = 1.0f;
+
+        movedLeft = false;
 
         frameX = 6;
     }
@@ -241,20 +249,16 @@ void Game::IterateThroughVisibleAmmo()
         if (!ammoDrop.GetHideAmmo())
         {
             // Update the pointer's target based on closest distance between the player and one of the ammo drops
-            if (distance[0] < distance[1] && distance[0] < distance[2] && distance[0] < distance[3]
-                && !ammoDrops[0].GetHideAmmo())
+            if (distance[0] < distance[1] && distance[0] < distance[2] && distance[0] < distance[3])
                 pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[0].GetAmmoPosition()));
 
-            else if (distance[1] < distance[0] && distance[1] < distance[2] && distance[1] < distance[3]
-                && !ammoDrops[1].GetHideAmmo())
+            else if (distance[1] < distance[0] && distance[1] < distance[2] && distance[1] < distance[3])
                 pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[1].GetAmmoPosition()));
 
-            else if (distance[2] < distance[0] && distance[2] < distance[1] && distance[2] < distance[3]
-                && !ammoDrops[2].GetHideAmmo())
+            else if (distance[2] < distance[0] && distance[2] < distance[1] && distance[2] < distance[3])
                 pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[2].GetAmmoPosition()));
 
-            else if (distance[3] < distance[0] && distance[3] < distance[1] && distance[3] < distance[2]
-                && !ammoDrops[3].GetHideAmmo())
+            else if (distance[3] < distance[0] && distance[3] < distance[1] && distance[3] < distance[2])
                 pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[3].GetAmmoPosition()));
         }
     }

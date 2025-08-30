@@ -76,6 +76,8 @@ private:
 
 	static constexpr int playerSizeX = 64;
 	static constexpr int playerSizeY = 80;
+
+	bool movedLeft;
 };
 
 #endif

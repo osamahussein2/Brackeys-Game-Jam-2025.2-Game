@@ -34,7 +34,7 @@ void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
 	float dy = playerPos_.y - target_.y;
 	float distance = std::sqrtf(dx * dx + dy * dy);
 
-	if (distance > 200.0f)
+	if (distance > 110.0f)
 	{
 		if (!pointerImage.isVisible()) pointerImage.setVisible(true);
 	}

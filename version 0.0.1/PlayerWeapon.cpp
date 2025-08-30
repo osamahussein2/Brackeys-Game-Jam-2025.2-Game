@@ -1,8 +1,9 @@
 #include "PlayerWeapon.h"
 #include "Global.h"
 
-PlayerWeapon::PlayerWeapon(Scene* scene) : weapon(scene), weaponHUDText(scene), weaponType(), clipsInMagazine(0),
-maxClips(0), totalAmmo(0), ammoHUDs{ {{scene, scene}, {scene, scene}} }, lastRecordedAmmo(0)
+PlayerWeapon::PlayerWeapon(Scene* scene) : weapon(scene), weaponHUDText(scene), weaponType(), 
+clipsInMagazine(0), maxClips(0), totalAmmo(0), ammoHUDs{ {{scene, scene}, {scene, scene}} }, lastRecordedAmmo(0), 
+reloadSound(scene)
 {
 }
 
@@ -80,6 +81,10 @@ void PlayerWeapon::InitializeWeapon(WeaponType weaponType_)
 			ammoHUDs[1][i].setVisible(false);
 		}
 
+		// Initialize reload sound
+		reloadSound.loadAudio("Sounds/Reload.mp3");
+		reloadSound.setSound3D(false);
+
 		break;
 
 	case WeaponType::Shotgun:
@@ -139,6 +144,10 @@ void PlayerWeapon::InitializeWeapon(WeaponType weaponType_)
 			ammoHUDs[1][i].setSize(5, 20);
 			ammoHUDs[1][i].setVisible(false);
 		}
+
+		// Initialize reload sound
+		reloadSound.loadAudio("Sounds/Reload.mp3");
+		reloadSound.setSound3D(false);
 
 		break;
 
@@ -239,6 +248,10 @@ void PlayerWeapon::InitializeWeapon(WeaponType weaponType_)
 			ammoHUDs[1][i].setSize(1, 20);
 			ammoHUDs[1][i].setVisible(false);
 		}
+
+		// Initialize reload sound
+		reloadSound.loadAudio("Sounds/Reload.mp3");
+		reloadSound.setSound3D(false);
 
 		break;
 
@@ -349,6 +362,10 @@ void PlayerWeapon::InitializeWeapon(WeaponType weaponType_)
 			ammoHUDs[1][i].setSize(1, 20);
 			ammoHUDs[1][i].setVisible(false);
 		}
+
+		// Initialize reload sound
+		reloadSound.loadAudio("Sounds/Reload.mp3");
+		reloadSound.setSound3D(false);
 
 		break;
 
@@ -617,6 +634,9 @@ void PlayerWeapon::ReloadWeapon()
 		
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Play reload sound
+			reloadSound.play();
+
 			// Set last recorded ammo before decreasing the total ammo amount
 			lastRecordedAmmo = totalAmmo;
 
@@ -641,6 +661,9 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Play reload sound
+			reloadSound.play();
+
 			// Set last recorded ammo before decreasing the total ammo amount
 			lastRecordedAmmo = totalAmmo;
 
@@ -665,6 +688,9 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Play reload sound
+			reloadSound.play();
+
 			// Set last recorded ammo before decreasing the total ammo amount
 			lastRecordedAmmo = totalAmmo;
 
@@ -689,6 +715,9 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Play reload sound
+			reloadSound.play();
+
 			// Set last recorded ammo before decreasing the total ammo amount
 			lastRecordedAmmo = totalAmmo;
 

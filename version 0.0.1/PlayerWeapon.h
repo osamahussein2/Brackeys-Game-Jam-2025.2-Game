@@ -49,6 +49,8 @@ private:
 	Image weapon;
 	std::array<std::vector<Image>, 2> ammoHUDs;
 
+	Audio reloadSound;
+
 	Text weaponHUDText;
 
 	int clipsInMagazine;

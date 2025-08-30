@@ -2,7 +2,7 @@
 #include "Global.h"
 
 PlayerWeapon::PlayerWeapon(Scene* scene) : weapon(scene), weaponHUDText(scene), weaponType(), clipsInMagazine(0),
-maxClips(0), totalAmmo(0), ammoHUDs{ {{scene, scene}, {scene, scene}} }
+maxClips(0), totalAmmo(0), ammoHUDs{ {{scene, scene}, {scene, scene}} }, lastRecordedAmmo(0)
 {
 }
 
@@ -373,6 +373,9 @@ void PlayerWeapon::UpdateWeapon()
 
 		UpdatePistolAmmoHUD();
 
+		// Prevents clips in magazine amount from exceeding max clips just in case
+		if (clipsInMagazine > maxClips) clipsInMagazine = maxClips;
+
 		if (totalAmmo < 0) totalAmmo = 0;
 		else if (totalAmmo > 48) totalAmmo = 48; // Set max ammo for pistol
 
@@ -387,6 +390,9 @@ void PlayerWeapon::UpdateWeapon()
 
 		if (totalAmmo < 0) totalAmmo = 0;
 		else if (totalAmmo > 24) totalAmmo = 24; // Set max ammo for shotgun
+
+		// Prevents clips in magazine amount from exceeding max clips just in case
+		if (clipsInMagazine > maxClips) clipsInMagazine = maxClips;
 
 		for (int i = 0; i < ammoHUDs[0].size(); i++)
 		{
@@ -407,6 +413,9 @@ void PlayerWeapon::UpdateWeapon()
 		if (totalAmmo < 0) totalAmmo = 0;
 		else if (totalAmmo > 100) totalAmmo = 100; // Set max ammo for micro SMG
 
+		// Prevents clips in magazine amount from exceeding max clips just in case
+		if (clipsInMagazine > maxClips) clipsInMagazine = maxClips;
+
 		for (int i = 0; i < ammoHUDs[0].size(); i++)
 		{
 			if (!ammoHUDs[0][i].isVisible()) ammoHUDs[0][i].setVisible(true);
@@ -425,6 +434,9 @@ void PlayerWeapon::UpdateWeapon()
 
 		if (totalAmmo < 0) totalAmmo = 0;
 		else if (totalAmmo > 120) totalAmmo = 120; // Set max ammo for SMG
+
+		// Prevents clips in magazine amount from exceeding max clips just in case
+		if (clipsInMagazine > maxClips) clipsInMagazine = maxClips;
 
 		for (int i = 0; i < ammoHUDs[0].size(); i++)
 		{
@@ -605,8 +617,22 @@ void PlayerWeapon::ReloadWeapon()
 		
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Set last recorded ammo before decreasing the total ammo amount
+			lastRecordedAmmo = totalAmmo;
+
+			// Decrement the total ammo count depending on clips in magazine value before reloading
 			totalAmmo -= maxClips - clipsInMagazine;
-			clipsInMagazine = maxClips;
+
+			// Set the clips in magazine to reset to max clips if the total ammo is equal to or greater than max clips
+			if (totalAmmo >= maxClips) clipsInMagazine = maxClips;
+
+			/* Set the clips in magazine to subtract max clips from the inverse of total ammo if the ammo amount is less
+			than max clips and the ammo amount is greater than 1 */
+			else if (totalAmmo > 1 && totalAmmo < maxClips) clipsInMagazine = maxClips - (1 / totalAmmo);
+
+			/* However if the total ammo is 1 or less, just increment the clips in magazine amount based on last
+			recorded ammo before the ammo is decremented */
+			else if (totalAmmo <= 1) clipsInMagazine += lastRecordedAmmo;
 		}
 
 		break;
@@ -615,8 +641,22 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Set last recorded ammo before decreasing the total ammo amount
+			lastRecordedAmmo = totalAmmo;
+
+			// Decrement the total ammo count depending on clips in magazine value before reloading
 			totalAmmo -= maxClips - clipsInMagazine;
-			clipsInMagazine = maxClips;
+
+			// Set the clips in magazine to reset to max clips if the total ammo is equal to or greater than max clips
+			if (totalAmmo >= maxClips) clipsInMagazine = maxClips;
+
+			/* Set the clips in magazine to subtract max clips from the inverse of total ammo if the ammo amount is less
+			than max clips and the ammo amount is greater than 1 */
+			else if (totalAmmo > 1 && totalAmmo < maxClips) clipsInMagazine = maxClips - (1 / totalAmmo);
+
+			/* However if the total ammo is 1 or less, just increment the clips in magazine amount based on last
+			recorded ammo before the ammo is decremented */
+			else if (totalAmmo <= 1) clipsInMagazine += lastRecordedAmmo;
 		}
 
 		break;
@@ -625,8 +665,22 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Set last recorded ammo before decreasing the total ammo amount
+			lastRecordedAmmo = totalAmmo;
+
+			// Decrement the total ammo count depending on clips in magazine value before reloading
 			totalAmmo -= maxClips - clipsInMagazine;
-			clipsInMagazine = maxClips;
+
+			// Set the clips in magazine to reset to max clips if the total ammo is equal to or greater than max clips
+			if (totalAmmo >= maxClips) clipsInMagazine = maxClips;
+
+			/* Set the clips in magazine to subtract max clips from the inverse of total ammo if the ammo amount is less
+			than max clips and the ammo amount is greater than 1 */
+			else if (totalAmmo > 1 && totalAmmo < maxClips) clipsInMagazine = maxClips - (1 / totalAmmo);
+
+			/* However if the total ammo is 1 or less, just increment the clips in magazine amount based on last
+			recorded ammo before the ammo is decremented */
+			else if (totalAmmo <= 1) clipsInMagazine += lastRecordedAmmo;
 		}
 
 		break;
@@ -635,8 +689,22 @@ void PlayerWeapon::ReloadWeapon()
 
 		if (clipsInMagazine < maxClips && totalAmmo > 0)
 		{
+			// Set last recorded ammo before decreasing the total ammo amount
+			lastRecordedAmmo = totalAmmo;
+
+			// Decrement the total ammo count depending on clips in magazine value before reloading
 			totalAmmo -= maxClips - clipsInMagazine;
-			clipsInMagazine = maxClips;
+
+			// Set the clips in magazine to reset to max clips if the total ammo is equal to or greater than max clips
+			if (totalAmmo >= maxClips) clipsInMagazine = maxClips;
+
+			/* Set the clips in magazine to subtract max clips from the inverse of total ammo if the ammo amount is less
+			than max clips and the ammo amount is greater than 1 */
+			else if (totalAmmo > 1 && totalAmmo < maxClips) clipsInMagazine = maxClips - (1 / totalAmmo);
+
+			/* However if the total ammo is 1 or less, just increment the clips in magazine amount based on last
+			recorded ammo before the ammo is decremented */
+			else if (totalAmmo <= 1) clipsInMagazine += lastRecordedAmmo;
 		}
 
 		break;

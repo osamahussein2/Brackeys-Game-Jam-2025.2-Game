@@ -54,6 +54,8 @@ private:
 	int clipsInMagazine;
 	int maxClips;
 	int totalAmmo;
+
+	int lastRecordedAmmo;
 };
 
 #endif

@@ -277,10 +277,10 @@ void Game::HandleWeapons()
         playerWeapons[2].HideWeapons();
         playerWeapons[3].HideWeapons();
 
-        if (shootDelay <= 0.3f) shootDelay += 0.016f;
+        if (shootDelay <= 0.35f) shootDelay += 0.016f;
 
         // Fire weapon
-        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[0].GetClipInMagazine() > 0 && shootDelay >= 0.2f
+        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[0].GetClipInMagazine() > 0 && shootDelay >= 0.3f
             && !keyPressed)
         {
             playerWeapons[0].ShootWeapon();
@@ -314,10 +314,10 @@ void Game::HandleWeapons()
         playerWeapons[2].HideWeapons();
         playerWeapons[3].HideWeapons();
 
-        if (shootDelay <= 0.3f) shootDelay += 0.016f;
+        if (shootDelay <= 0.65f) shootDelay += 0.016f;
 
         // Fire weapon
-        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[1].GetClipInMagazine() > 0 && shootDelay >= 0.2f
+        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[1].GetClipInMagazine() > 0 && shootDelay >= 0.6f
             && !keyPressed)
         {
             playerWeapons[1].ShootWeapon();
@@ -351,7 +351,7 @@ void Game::HandleWeapons()
         playerWeapons[2].UpdateWeapon();
         playerWeapons[3].HideWeapons();
 
-        if (shootDelay <= 0.3f) shootDelay += 0.016f;
+        if (shootDelay <= 0.25f) shootDelay += 0.016f;
 
         // Fire weapon
         if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[2].GetClipInMagazine() > 0 && shootDelay >= 0.2f
@@ -391,7 +391,7 @@ void Game::HandleWeapons()
         if (shootDelay <= 0.3f) shootDelay += 0.016f;
 
         // Fire weapon
-        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[3].GetClipInMagazine() > 0 && shootDelay >= 0.2f
+        if (Input::isKeyPressed(S_KEY_SPACE) && playerWeapons[3].GetClipInMagazine() > 0 && shootDelay >= 0.25f
             && !keyPressed)
         {
             playerWeapons[3].ShootWeapon();

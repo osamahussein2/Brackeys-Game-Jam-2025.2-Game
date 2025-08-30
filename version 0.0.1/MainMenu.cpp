@@ -1,12 +1,9 @@
 #include "MainMenu.h"
 #include "Global.h"
 
-bool MainMenu::firstTimePlaying = true;
-
 MainMenu::MainMenu(Scene* scene) : playButton{ scene, scene }, creditsButton{ scene, scene }, quitButton{ scene, scene },
-selectedOption(0), keyPressed(false), menuMusic(scene), musicPlaying(false)
+selectedOption(0), keyPressed(false), menuMusic(scene), musicPlaying(false), mainMenuTitle(scene)
 {
-    firstTimePlaying = true;
 }
 
 MainMenu::~MainMenu()
@@ -55,6 +52,14 @@ void MainMenu::InitializeMainMenu()
         quitButton[i].getComponent<ButtonComponent>().onRelease = QuitGame;
     }
 
+    mainMenuTitle.setAnchorPreset(AnchorPreset::CENTER_TOP);
+    mainMenuTitle.setPositionYOffset(30.0f);
+    mainMenuTitle.setText("Nova Shooter");
+    mainMenuTitle.setFontSize(40);
+    mainMenuTitle.setColor(1.0f, 1.0f, 1.0f);
+
+    mainMenuTitle.setVisible(false);
+
     // Set all buttons to be invisible at start of game
     playButton[0].setVisible(false);
     playButton[1].setVisible(false);
@@ -80,6 +85,8 @@ void MainMenu::UpdateMainMenu()
         musicPlaying = true;
     }
 
+    if (!mainMenuTitle.isVisible()) mainMenuTitle.setVisible(true);
+
     UpdatePlayButtonInteraction();
     UpdateCreditsButtonInteraction();
     UpdateQuitButtonInteraction();
@@ -99,20 +106,13 @@ void MainMenu::HideMainMenu()
 
     if (quitButton[0].isVisible()) quitButton[0].setVisible(false);
     if (quitButton[1].isVisible()) quitButton[1].setVisible(false);
+
+    if (mainMenuTitle.isVisible()) mainMenuTitle.setVisible(false);
 }
 
 void MainMenu::PlayGame()
 {
-    if (firstTimePlaying)
-    {
-        Global::gameState = GameState::BrackeysLogo;
-        firstTimePlaying = false;
-    }
-
-    else
-    {
-        Global::gameState = GameState::Playing;
-    }
+    Global::gameState = GameState::BrackeysLogo;
 }
 
 void MainMenu::Credits()
@@ -184,19 +184,8 @@ void MainMenu::SwitchBetweenMenuOption()
 
         if (Input::isKeyPressed(S_KEY_ENTER) && !Global::enterKeyPressed)
         {
-            if (firstTimePlaying)
-            {
-                Global::gameState = GameState::BrackeysLogo;
-                firstTimePlaying = false;
-
-                Global::enterKeyPressed = true;
-            }
-
-            else
-            {
-                Global::gameState = GameState::Playing;
-                Global::enterKeyPressed = true;
-            }
+            Global::gameState = GameState::BrackeysLogo;
+            Global::enterKeyPressed = true;
         }
 
         else if (!Input::isKeyPressed(S_KEY_ENTER) && Global::enterKeyPressed)

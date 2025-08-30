@@ -54,7 +54,7 @@ private:
 
 	bool keyPressed;
 
-	static bool firstTimePlaying;
+	Text mainMenuTitle;
 };
 
 #endif

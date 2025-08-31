@@ -17,7 +17,7 @@ void Pointer::InitializePointer(std::string filePath_)
 	pointerImage.setVisible(false);
 }
 
-void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
+void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_, float distanceValue_)
 {
 	// Set the rotation of the pointer to look at where the target is in relation to the player
 	float angle_rad = std::atan2(target_.y - playerPos_.y, target_.x - playerPos_.x);
@@ -34,7 +34,7 @@ void Pointer::UpdatePointer(Vector2& playerPos_, Vector2& target_)
 	float dy = playerPos_.y - target_.y;
 	float distance = std::sqrtf(dx * dx + dy * dy);
 
-	if (distance > 110.0f)
+	if (distance > distanceValue_)
 	{
 		if (!pointerImage.isVisible()) pointerImage.setVisible(true);
 	}

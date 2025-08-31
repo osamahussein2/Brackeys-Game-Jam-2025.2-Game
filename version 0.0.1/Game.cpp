@@ -1,10 +1,12 @@
 #include "Game.h"
 #include "Global.h"
 
-Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), pointer(gameScene), x(0.0f), y(0.0f), 
+Game::Game(Scene* gameScene, Scene* UI_scene) : camera(gameScene), ammoPointer(gameScene), x(0.0f), y(0.0f), 
 gameMusic(gameScene), musicPlaying(false), ammoDrops{ gameScene, gameScene, gameScene, gameScene }, 
 playerWeapons{ UI_scene, UI_scene, UI_scene, UI_scene }, shootDelay(0.3f), weaponIndex(1), keyPressed(false),
-switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f), player(gameScene), frameX(0), movedLeft(false)
+switchWeaponKeyPressed(false), velocityX(1.0f), velocityY(0.0f), player(gameScene), frameX(0), movedLeft(false),
+enemies{gameScene, gameScene, gameScene, gameScene, gameScene, gameScene, gameScene, gameScene, gameScene, gameScene },
+endGoalPointer(gameScene)
 {
 
 }
@@ -21,7 +23,8 @@ void Game::InitializeGame()
     Global::scene.setCamera(camera.getEntity());
 
     // Initialize game objects
-    pointer.InitializePointer("Pointers/YellowPointer.png");
+    ammoPointer.InitializePointer("Pointers/YellowPointer.png");
+    endGoalPointer.InitializePointer("Pointers/EndGoalPointer.png");
 
     player.setTexture("Sprites/PlayerSprite.png");
     
@@ -44,16 +47,18 @@ void Game::InitializeGame()
     gameMusic.setLopping(true);
 
     // Initialize ammo drops
-    ammoDrops[0].InitializeAmmoDrop(AmmoType::PistolAmmo, Vector3(200.0f, 200.0f, 0.1f));
-    ammoDrops[1].InitializeAmmoDrop(AmmoType::ShotgunAmmo, Vector3(400.0f, 200.0f, 0.1f));
-    ammoDrops[2].InitializeAmmoDrop(AmmoType::MicroSMGAmmo, Vector3(400.0f, 600.0f, 0.1f));
-    ammoDrops[3].InitializeAmmoDrop(AmmoType::SMGAmmo, Vector3(800.0f, 800.0f, 0.1f));
+    ammoDrops[0].InitializeAmmoDrop(AmmoType::PistolAmmo, Vector3(-200.0f, -200.0f, 0.1f));
+    ammoDrops[1].InitializeAmmoDrop(AmmoType::ShotgunAmmo, Vector3(-200.0f, 200.0f, 0.1f));
+    ammoDrops[2].InitializeAmmoDrop(AmmoType::MicroSMGAmmo, Vector3(200.0f, -200.0f, 0.1f));
+    ammoDrops[3].InitializeAmmoDrop(AmmoType::SMGAmmo, Vector3(200.0f, 200.0f, 0.1f));
 
     // Initialize player weapons
     playerWeapons[0].InitializeWeapon(WeaponType::Pistol);
     playerWeapons[1].InitializeWeapon(WeaponType::Shotgun);
     playerWeapons[2].InitializeWeapon(WeaponType::MicroSMG);
     playerWeapons[3].InitializeWeapon(WeaponType::SMG);
+
+    InitializeEnemies();
 }
 
 void Game::UpdateGame()
@@ -77,6 +82,8 @@ void Game::UpdateGame()
 
     HandleAmmoCollisions();
 
+    UpdateGameEnemies();
+
     camera.setPosition(x - 450.0f, y - 250.0f, 0.0f);
     
     // Make sure the camera is looking at the player on every frame
@@ -93,13 +100,15 @@ void Game::UpdateGame()
     player.setPosition(x, y, 0.0f);
 
     IterateThroughVisibleAmmo();
+    PointToEndGoal();
 
     HandlePlayerInput();
 }
 
 void Game::HideGame()
 {
-    pointer.HidePointer();
+    ammoPointer.HidePointer();
+    endGoalPointer.HidePointer();
 
     for (AmmoDrop& ammoDrop : ammoDrops) ammoDrop.HideAmmoDrop();
     for (PlayerWeapon& playerWeapon : playerWeapons) playerWeapon.HideWeapons();
@@ -107,6 +116,8 @@ void Game::HideGame()
     for (int i = 0; i < playerBullets.size(); i++) playerBullets[i]->HideBullet();
 
     player.setVisible(false);
+
+    for (int i = 0; i < enemies.size(); i++) enemies[i].HideEnemy();
 }
 
 void Game::ResetGame()
@@ -134,6 +145,8 @@ void Game::ResetGame()
 
     if (velocityX != 1.0f) velocityX = 1.0f;
     if (velocityY != 0.0f) velocityY = 0.0f;
+
+    for (int i = 0; i < enemies.size(); i++) enemies[i].ResetEnemy();
 }
 
 void Game::HandlePlayerInput()
@@ -250,23 +263,23 @@ void Game::IterateThroughVisibleAmmo()
         {
             // Update the pointer's target based on closest distance between the player and one of the ammo drops
             if (distance[0] < distance[1] && distance[0] < distance[2] && distance[0] < distance[3])
-                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[0].GetAmmoPosition()));
+                ammoPointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[0].GetAmmoPosition()), 110.0f);
 
             else if (distance[1] < distance[0] && distance[1] < distance[2] && distance[1] < distance[3])
-                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[1].GetAmmoPosition()));
+                ammoPointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[1].GetAmmoPosition()), 110.0f);
 
             else if (distance[2] < distance[0] && distance[2] < distance[1] && distance[2] < distance[3])
-                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[2].GetAmmoPosition()));
+                ammoPointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[2].GetAmmoPosition()), 110.0f);
 
             else if (distance[3] < distance[0] && distance[3] < distance[1] && distance[3] < distance[2])
-                pointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[3].GetAmmoPosition()));
+                ammoPointer.UpdatePointer(Vector2(x, y), Vector2(ammoDrops[3].GetAmmoPosition()), 110.0f);
         }
     }
 
     if (ammoDrops[0].GetHideAmmo() && ammoDrops[1].GetHideAmmo() && ammoDrops[2].GetHideAmmo() &&
         ammoDrops[3].GetHideAmmo())
     {
-        pointer.HidePointer();
+        ammoPointer.HidePointer();
     }
 }
 
@@ -497,10 +510,143 @@ void Game::UpdatePlayerBullets()
              bulletIterator = playerBullets.erase(bulletIterator);
         }
 
+        else if (playerBullet->BulletCollision(enemies[0].GetEnemyPosition(), enemies[0].GetEnemySize()) &&
+            !enemies[0].IsDead())
+        {
+            enemies[0].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[1].GetEnemyPosition(), enemies[1].GetEnemySize()) && 
+            !enemies[1].IsDead())
+        {
+            enemies[1].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[2].GetEnemyPosition(), enemies[2].GetEnemySize()) &&
+            !enemies[2].IsDead())
+        {
+            enemies[2].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[3].GetEnemyPosition(), enemies[3].GetEnemySize()) &&
+            !enemies[3].IsDead())
+        {
+            enemies[3].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[4].GetEnemyPosition(), enemies[4].GetEnemySize()) &&
+            !enemies[4].IsDead())
+        {
+            enemies[4].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[5].GetEnemyPosition(), enemies[5].GetEnemySize()) &&
+            !enemies[5].IsDead())
+        {
+            enemies[5].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[6].GetEnemyPosition(), enemies[6].GetEnemySize()) &&
+            !enemies[6].IsDead())
+        {
+            enemies[6].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[7].GetEnemyPosition(), enemies[7].GetEnemySize()) &&
+            !enemies[7].IsDead())
+        {
+            enemies[7].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[8].GetEnemyPosition(), enemies[8].GetEnemySize()) &&
+            !enemies[8].IsDead())
+        {
+            enemies[8].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
+        else if (playerBullet->BulletCollision(enemies[9].GetEnemyPosition(), enemies[9].GetEnemySize()) &&
+            !enemies[9].IsDead())
+        {
+            enemies[9].SetDamaged(20.0f);
+
+            playerBullet->DestroyBulletComponents();
+            bulletIterator = playerBullets.erase(bulletIterator);
+        }
+
         else
         {
             ++bulletIterator; // Keep iterating through the player bullets
         }
+    }
+}
+
+void Game::InitializeEnemies()
+{
+    enemies[0].InitializeEnemy(EnemyType::RedEnemy, Vector3(200.0f, 500.0f, 0.0f));
+    enemies[1].InitializeEnemy(EnemyType::GreenEnemy, Vector3(0.0f, -300.0f, 0.0f));
+    enemies[2].InitializeEnemy(EnemyType::YellowEnemy, Vector3(400.0f, 300.0f, 0.0f));
+    enemies[3].InitializeEnemy(EnemyType::BlueEnemy, Vector3(600.0f, 600.0f, 0.0f));
+    enemies[4].InitializeEnemy(EnemyType::RedEnemy, Vector3(100.0f, -100.0f, 0.0f));
+    enemies[5].InitializeEnemy(EnemyType::GreenEnemy, Vector3(-500.0f, 500.0f, 0.0f));
+    enemies[6].InitializeEnemy(EnemyType::YellowEnemy, Vector3(-250.0f, 100.0f, 0.0f));
+    enemies[7].InitializeEnemy(EnemyType::BlueEnemy, Vector3(200.0f, 500.0f, 0.0f));
+    enemies[8].InitializeEnemy(EnemyType::GreenEnemy, Vector3(200.0f, 500.0f, 0.0f));
+    enemies[9].InitializeEnemy(EnemyType::YellowEnemy, Vector3(200.0f, 500.0f, 0.0f));
+}
+
+void Game::UpdateGameEnemies()
+{
+    for (int i = 0; i < enemies.size(); i++)
+    {
+        enemies[i].UpdateEnemy(Vector3(x, y, 0.0f));
+    }
+}
+
+void Game::PointToEndGoal()
+{
+    if (enemies[0].IsDead() && enemies[1].IsDead() && enemies[2].IsDead() && enemies[3].IsDead() && enemies[4].IsDead() &&
+        enemies[5].IsDead() && enemies[6].IsDead() && enemies[7].IsDead() && enemies[8].IsDead() && enemies[9].IsDead())
+    {
+        endGoalPointer.UpdatePointer(Vector2(x, y), Vector2(1000.0f, 500.0f), 30.0f);
+    }
+
+    else
+    {
+        endGoalPointer.HidePointer();
+    }
+
+    if (enemies[0].IsDead() && enemies[1].IsDead() && enemies[2].IsDead() && enemies[3].IsDead() && enemies[4].IsDead() &&
+        enemies[5].IsDead() && enemies[6].IsDead() && enemies[7].IsDead() && enemies[8].IsDead() && enemies[9].IsDead() &&
+        x >= 950.0f && x <= 1050.0f && y >= 450.0f && y <= 550.0f)
+    {
+        Global::gameState = GameState::Credits;
     }
 }
 
@@ -524,4 +670,6 @@ void Game::CleanGame()
     }
 
     player.clearInstances();
+
+    for (int i = 0; i < enemies.size(); i++) enemies[i].CleanEnemy();
 }

@@ -17,7 +17,7 @@ public:
 	~Pointer();
 
 	void InitializePointer(std::string filePath_);
-	void UpdatePointer(Vector2& playerPos_, Vector2& target_);
+	void UpdatePointer(Vector2& playerPos_, Vector2& target_, float distanceValue_);
 
 	void HidePointer();
 

@@ -31,6 +31,9 @@ public:
 
 	void DestroyBulletComponents();
 
+	Vector2 GetBulletPosition() const;
+	Vector2 GetBulletSize() const;
+
 private:
 	BulletType bulletType;
 	Image bullet;

@@ -9,6 +9,8 @@
 #include "PlayerWeapon.h"
 #include "PlayerBullet.h"
 
+#include "Enemy.h"
+
 #include "MouseCursor.h"
 
 // Include standard libraries
@@ -45,13 +47,21 @@ private:
 
 	void UpdatePlayerBullets();
 
+	// Enemies
+	void InitializeEnemies();
+	void UpdateGameEnemies();
+
+	// Enemy/end goal pointer
+	void PointToEndGoal();
+
 private:
 	Camera camera;
 
 	float x, y;
 	float velocityX, velocityY;
 
-	Pointer pointer;
+	Pointer ammoPointer;
+	Pointer endGoalPointer;
 
 	Audio gameMusic;
 
@@ -78,6 +88,8 @@ private:
 	static constexpr int playerSizeY = 80;
 
 	bool movedLeft;
+
+	std::array<Enemy, 10> enemies;
 };
 
 #endif

@@ -97,3 +97,13 @@ void PlayerBullet::DestroyBulletComponents()
 {
 	bulletFireSound.destroyAudio();
 }
+
+Vector2 PlayerBullet::GetBulletPosition() const
+{
+	return Vector2(bullet.getPosition().x, bullet.getPosition().y);
+}
+
+Vector2 PlayerBullet::GetBulletSize() const
+{
+	return Vector2(30.0f, 30.0f);
+}
